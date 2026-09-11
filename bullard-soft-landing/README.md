@@ -6,7 +6,7 @@ Open-source **starter** replication for the heterogeneous-expectations New Keyne
 > DOI: https://doi.org/10.1016/j.jmoneco.2025.103871
 
 **Primary open source used here:** Tinbergen Institute Discussion Paper TI 2025-001/VI (7 Jan 2025),
-Open WP: https://papers.tinbergen.nl/25001.pdf (not shipped in this repo).
+https://papers.tinbergen.nl/25001.pdf — saved under `papers/`.
 
 See **NOTES.md** for verified vs provisional claims, search for replication materials, and related digest papers.
 
@@ -17,13 +17,15 @@ See **NOTES.md** for verified vs provisional claims, search for replication mate
 3. **Timing vs strength counterfactuals** (WP §4 spirit) under a shared cost-push surge and identical SL seed.
 
 ```bash
-cd bullard-soft-landing
+cd /workspace/macro-models/bullard-soft-landing
 # NumPy required (often already present); else:
 #   python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 python3 src/re_nk_irf.py
 python3 src/re_nk_irf.py --horizon 40 --shock 1.0 --save output/irf_monetary.csv
 python3 src/henk_sim.py --horizon 80 --seed 1 --save-dir output
 python3 src/timing_counterfactual.py --horizon 80 --seed 1 --surge-quarters 12 --delay 8
+# cost-push IRF chart (needs matplotlib):
+python3 src/plot_costpush_irf.py
 # optional micro smoke test:
 python3 src/social_learning.py
 ```
@@ -67,11 +69,13 @@ bullard-soft-landing/
   NOTES.md
   README.md
   requirements.txt
+  papers/          # Tinbergen WP PDF + text extract
   src/
     re_nk_irf.py
     social_learning.py
     henk_sim.py
     timing_counterfactual.py
+    plot_costpush_irf.py
     henk_equation_skeleton.md
   output/          # FIRE / SL IRF CSVs + fire_vs_sl_summary.txt
     counterfactuals/  # timing vs strength CSVs + summary
