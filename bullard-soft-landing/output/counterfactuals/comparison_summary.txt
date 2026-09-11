@@ -1,0 +1,28 @@
+Timing vs strength counterfactuals — HENK Python prototype
+Date context: 2026-09-11
+horizon=80, seed=1, J=100, shock=costpush, shock_size=0.01, surge_quarters=12, use_ma=True, delay=8
+Same SL seed and same u/g/v paths across scenarios.
+[PROVISIONAL] Not author Table 3 / estimated historical shocks; illustrative cost-push surge under quasi-RE + SL.
+
+scenario                  peak_pi        min_y     max|phi|  t_peak_pi  t_min_y
+baseline                 0.093128    -0.168735     0.036851         79       79
+  note: Table 1: phi_pi=1.7131, rho_i=0.8179
+  peak_pi_after_delay=0.093128, min_y_after_delay=-0.168735
+earlier                  0.068105    -0.158411     0.033825         79       79
+  note: Earlier from t=0: phi_pi=1.88441 (+10%), rho_i=0.73611 (×0.9)
+  peak_pi_after_delay=0.068105, min_y_after_delay=-0.158411
+stronger_delayed         0.075231    -0.170772     0.036851         79       79
+  note: Baseline until t=8, then phi_pi=1.88441 (+10%); rho_i stays 0.8179
+  peak_pi_after_delay=0.075231, min_y_after_delay=-0.170772
+
+Relative to baseline:
+  earlier: Δpeak_pi=-0.025023, Δmin_y=+0.010325, Δmax|phi|=-0.003026
+  stronger_delayed: Δpeak_pi=-0.017897, Δmin_y=-0.002037, Δmax|phi|=+0.000000
+
+Interpretation (prototype only, not paper claim):
+  WP §4 narrative: timing of tightening matters more than delayed strength
+  for containing an inflation scare under heterogeneous beliefs.
+  Compare peak_pi and max|phi| across earlier vs stronger_delayed here.
+  [PROVISIONAL] With a well-specified common PLM component, phi paths can be
+  news-dominated; policy still shifts pi/y via A,B,C,D,G loadings.
+
