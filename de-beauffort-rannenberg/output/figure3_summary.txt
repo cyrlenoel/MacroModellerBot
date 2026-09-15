@@ -1,0 +1,47 @@
+de Beauffort & Rannenberg (NBB WP 493) — Figure 3 IRF summary
+Shock: 1% of GDP government spending, empirical-shaped path.
+
+Active calibration:
+  σ_e Table 2 = 0.58
+  σ_e used    = 0.35  [PROVISIONAL Rouwenhorst SD]
+  φ_GT baseline = 0.25  (LB variants use 0)
+  ψ_nfa       = 0.001
+  G/Y         = 0.214304
+  HtM         = 0.494698
+  iMPC year-1 = 0.527274
+
+[ha] qualitative co-movements:
+  C_positive: True
+  Y_T_positive: True
+  Y_NT_positive: True
+  p_ratio_negative: True
+  NX_negative: True
+  C_T_gt_C_NT: True
+  SS: G/Y=0.2143 φ_GT=0.2500 A=0.6119 HtM=0.495 year-1 iMPC=0.527
+
+[ra] qualitative co-movements:
+  C_positive: False
+  Y_T_positive: True
+  Y_NT_positive: True
+  p_ratio_negative: True
+  NX_negative: False
+  C_T_gt_C_NT: True
+  SS: G/Y=0.2143 φ_GT=0.2500 A=0.6119 HtM=0.495 year-1 iMPC=0.527
+
+[ha_lb] qualitative co-movements:
+  C_positive: True
+  Y_T_positive: True
+  Y_NT_positive: True
+  p_ratio_negative: True
+  NX_negative: True
+  C_T_gt_C_NT: True
+  SS: G/Y=0.2143 φ_GT=0.0000 A=0.6119 HtM=0.495 year-1 iMPC=0.527
+
+[ra_lb] qualitative co-movements:
+  C_positive: False
+  Y_T_positive: False
+  Y_NT_positive: True
+  p_ratio_negative: True
+  NX_negative: False
+  C_T_gt_C_NT: True
+  SS: G/Y=0.2143 φ_GT=0.0000 A=0.6119 HtM=0.495 year-1 iMPC=0.527
