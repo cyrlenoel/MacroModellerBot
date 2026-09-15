@@ -9,7 +9,7 @@ Open-source **starter** replication of:
 
 **Do not commit the PDF.** Cite the links above.
 
-**Toolkit:** Python + [Sequence-Space Jacobian](https://github.com/shade-econ/sequence-jacobian) (Auclert, Bardóczy, Rognlie, Straub 2021). The authors thank Adrien Auclert for guidance on SSJ.
+**Toolkit:** Python + [Sequence-Space Jacobian](https://github.com/shade-econ/sequence-jacobian) (Auclert, Bardóczy, Rognlie, Straub 2021). The authors thank Adrien Auclert for guidance on SSJ. Checked-in `output/figure3.png` was produced with **sequence-jacobian 1.0.0**.
 
 See **NOTES.md** for verified vs provisional claims, calibration, and blockers.
 
@@ -23,6 +23,7 @@ aggregate / tradable / non-tradable consumption and output, the T/NT price ratio
 cd de-beauffort-rannenberg
 python3 -m pip install -r requirements.txt
 python3 src/run_figure3.py
+# optional knobs: --sigma-e 0.35 --psi-nfa 1e-3
 # faster smoke (no φ_GT=0 variants):
 python3 src/run_figure3.py --T 80 --skip-lb
 python3 src/test_qualitative.py
@@ -68,9 +69,11 @@ Magnitudes and some dynamic shapes (especially the S-BVAR overlay and the NX rec
 ```
 de-beauffort-rannenberg/
   NOTES.md
+  EXTENDING.md     # how to add another domestic sector later
   README.md
   requirements.txt
   src/
+    sectors.py          # TRADABLE / NONTRADABLE labels
     calibration.py      # Table 2 + consistent SS
     households.py       # HA hetblock, RANK Euler, sticky Jacobians
     production.py       # T / NT / distribution prices, wage PCs

@@ -8,7 +8,7 @@ from typing import Dict
 import numpy as np
 from sequence_jacobian.classes import SteadyStateDict
 
-from .calibration import SteadyState, build_real_steady_state
+from .calibration import SteadyState, assert_real_ss_guardrails, build_real_steady_state
 from .empirical_sbvar import g_shock_level
 from .households import (
     annual_impc,
@@ -26,8 +26,13 @@ DEFAULT_T = 200
 PLOT_H = 20
 
 
-def complete_ha_ss(phi_GT: float | None = None, psi_nfa: float = 1e-3) -> tuple[SteadyState, dict]:
-    ss = build_real_steady_state(phi_GT=phi_GT, psi_nfa=psi_nfa)
+def complete_ha_ss(
+    phi_GT: float | None = None,
+    psi_nfa: float = 1e-3,
+    sigma_e: float | None = None,
+) -> tuple[SteadyState, dict]:
+    ss = build_real_steady_state(phi_GT=phi_GT, psi_nfa=psi_nfa, sigma_e=sigma_e)
+    assert_real_ss_guardrails(ss)
     ss, hh_ss = solve_ha_steady_state(ss)
     return ss, hh_ss
 
@@ -69,6 +74,10 @@ def household_report(ss: SteadyState, hh_ss) -> dict:
         "phi_l": ss.phi_l,
         "chi": ss.chi,
         "import_share": ss.M / ss.Y,
+        "sigma_e": ss.sigma_e,
+        "sigma_e_table2": ss.sigma_e_table2,
+        "phi_GT": ss.phi_GT,
+        "psi_nfa": ss.psi_nfa,
     }
 
 
@@ -77,10 +86,11 @@ def solve_variant(
     phi_GT: float | None = None,
     T: int = DEFAULT_T,
     psi_nfa: float = 1e-3,
+    sigma_e: float | None = None,
 ):
     """kind in {ha, ha_lb, ra, ra_lb, ha_fire}."""
     phi = 0.0 if kind.endswith("lb") else phi_GT
-    ss, hh_ss = complete_ha_ss(phi_GT=phi, psi_nfa=psi_nfa)
+    ss, hh_ss = complete_ha_ss(phi_GT=phi, psi_nfa=psi_nfa, sigma_e=sigma_e)
     ssdict = make_ss_dict(ss, hh_ss)
     ssdict["beta"] = ss.beta_ha if kind.startswith("ha") else ss.beta_ra
     ss.beta = ssdict["beta"]

@@ -1,5 +1,8 @@
 """Open-economy / trade block: CES demands, distribution, UIP, NFA.
 
+Domestic output identities are T/NT (``sectors.TRADABLE``, ``sectors.NONTRADABLE``).
+Adding a sector means another CES nest and another Y_{s} identity here.
+
 Paper §3.3–3.4. Foreign variables are held at SS (small-open-economy
 closure). Export demand uses the foreign analogue of (8)+(30) with C*
 constant — the paper writes X = C*_F / (1+μ_f) but not the foreign CES;

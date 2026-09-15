@@ -185,16 +185,44 @@ class SteadyState:
         return d
 
 
-def build_real_steady_state(phi_GT: float | None = None, psi_nfa: float = 1e-3) -> SteadyState:
+def assert_real_ss_guardrails(ss: SteadyState, import_tol: float = 1e-8, mrs_tol: float = 1e-8) -> None:
+    """Fail loudly if the unit-price SS misses the §4.1 import or MRS targets."""
+    import_share = ss.M / ss.Y
+    gap_m = abs(import_share - IMPORT_SHARE_TARGET)
+    if gap_m >= import_tol:
+        raise AssertionError(
+            f"Steady-state import share M/Y={import_share:.12f} misses "
+            f"target {IMPORT_SHARE_TARGET} by {gap_m:.3e} (tol {import_tol})."
+        )
+    if abs(ss.w_T - 1.0) > mrs_tol or abs(ss.w_NT - 1.0) > mrs_tol:
+        raise AssertionError(
+            f"MRS guardrail expects unit wages; got w_T={ss.w_T}, w_NT={ss.w_NT}."
+        )
+    gap_mrs = abs(ss.mrs_T - ss.mrs_NT)
+    if gap_mrs >= mrs_tol:
+        raise AssertionError(
+            f"Sectoral MRS not equal at unit wages: mrs_T={ss.mrs_T:.12f}, "
+            f"mrs_NT={ss.mrs_NT:.12f}, |gap|={gap_mrs:.3e} (tol {mrs_tol})."
+        )
+
+
+def build_real_steady_state(
+    phi_GT: float | None = None,
+    psi_nfa: float = 1e-3,
+    sigma_e: float | None = None,
+) -> SteadyState:
     """Unit-price SS with Y=1, NX=0, P_Z=W_S=1.
 
     `psi_nfa` is the linear UIP debt-elastic wedge. Paper Γ=exp(-1e-9 nfa);
     1e-3 is a Schmitt-Grohé–Uribe-style value used for a stable linear solve
     ([PROVISIONAL] numerical; paper's 1e-9 is recorded in NOTES.md).
+    `sigma_e` overrides Table 2 / default Rouwenhorst SD when not None.
     """
     p = dict(TABLE2)
     if phi_GT is not None:
         p["phi_GT"] = float(phi_GT)
+    if sigma_e is not None:
+        p["sigma_e"] = float(sigma_e)
 
     r = 1.0 / p["beta_ra"] - 1.0  # VERIFIED: β_RA targets 2% annual
     Y = 1.0
@@ -257,7 +285,7 @@ def build_real_steady_state(phi_GT: float | None = None, psi_nfa: float = 1e-3) 
         * (C ** p["sigma"])
     )
 
-    return SteadyState(
+    ss = SteadyState(
         beta=p["beta_ha"],
         beta_ra=p["beta_ra"],
         beta_ha=p["beta_ha"],
@@ -336,6 +364,8 @@ def build_real_steady_state(phi_GT: float | None = None, psi_nfa: float = 1e-3) 
         B_ss=np.nan,
         C_F_star=C_F_star,
     )
+    assert_real_ss_guardrails(ss)
+    return ss
 
 
 def attach_assets(ss: SteadyState, A: float) -> SteadyState:

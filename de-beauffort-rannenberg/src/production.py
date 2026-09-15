@@ -1,5 +1,8 @@
 """Production, distribution, and wage Phillips curves.
 
+Domestic sectors are ``sectors.DOMESTIC_SECTORS`` = (T, NT); this file still
+implements those two explicitly (hours, MRS, wage PCs, distribution prices).
+
 Flexible prices / sticky wages (paper §3.1): P_Z = W_S so sectoral real
 prices equal sectoral real wages. Distribution costs: Corsetti–Dedola
 (paper eqs. 28–31). Wage PCs: linearized eqs. (12) with slope κ_w=0.0044.

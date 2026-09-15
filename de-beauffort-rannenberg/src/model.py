@@ -1,4 +1,8 @@
-"""Assemble the two-sector open-economy HANK / RANK DAG."""
+"""Assemble the two-sector open-economy HANK / RANK DAG.
+
+Domestic production is labelled by ``sectors.DOMESTIC_SECTORS`` = (T, NT).
+The blocks themselves are still explicit two-sector objects (see EXTENDING.md).
+"""
 
 from __future__ import annotations
 
@@ -9,13 +13,26 @@ from .households import household_ha, household_rank
 from .monetary import ex_post_rate, fisher, taylor_res
 from .open_economy import market_clearing, nfa_uip, trade_demand
 from .production import hours, labor_income, mrs_block, prices, wage_pcs
+from .sectors import DOMESTIC_SECTORS, NONTRADABLE, TRADABLE
 
-UNKNOWN_LIST = ["Y_T", "Y_NT", "w_T", "w_NT", "pi", "Q", "i", "B", "nfa"]
+# One Y and w per domestic sector, plus nominal / open-economy states.
+UNKNOWN_LIST = (
+    [f"Y_{s}" for s in DOMESTIC_SECTORS]
+    + [f"w_{s}" for s in DOMESTIC_SECTORS]
+    + ["pi", "Q", "i", "B", "nfa"]
+)
+
+# goods_NT is computed in market_clearing but *omitted* from targets on purpose.
+# Walras: household budget + government budget + NFA LoM ⇒ aggregate goods
+# clearing, so {asset_mkt, goods_T, goods_NT} are linearly dependent. With two
+# quantity unknowns (Y_T, Y_NT) we keep asset_mkt and goods_T (the tradable
+# identity that is not implied by G's NT bias alone). Dropping goods_NT is
+# therefore identification, not an incomplete model. See EXTENDING.md.
 TARGET_LIST = [
     "asset_mkt",
-    "goods_T",
-    "pc_T",
-    "pc_NT",
+    f"goods_{TRADABLE}",
+    f"pc_{TRADABLE}",
+    f"pc_{NONTRADABLE}",
     "uip_res",
     "cpi_res",
     "i_res",

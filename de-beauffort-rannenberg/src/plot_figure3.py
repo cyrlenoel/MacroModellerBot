@@ -71,14 +71,23 @@ def plot_figure3(
         loc="lower center",
         ncol=5,
         frameon=False,
-        bbox_to_anchor=(0.5, -0.02),
+        bbox_to_anchor=(0.5, 0.04),
     )
     fig.suptitle(
         "Impulse responses to a government spending shock (WP 493 Figure 3 layout)",
         fontsize=12,
         y=0.995,
     )
-    fig.tight_layout()
+    fig.tight_layout(rect=(0.0, 0.08, 1.0, 0.97))
+    fig.text(
+        0.5,
+        0.012,
+        "S-BVAR markers are hand-digitised from WP 493 Figure 3 [PROVISIONAL], "
+        "not the authors' numerical series.",
+        ha="center",
+        fontsize=8,
+        color="0.35",
+    )
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path, dpi=160, bbox_inches="tight")
     plt.close(fig)
