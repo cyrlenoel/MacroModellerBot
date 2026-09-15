@@ -1,0 +1,38 @@
+de Beauffort & Rannenberg (NBB WP 493) — Figure 3 IRF summary
+Shock: 1% of GDP government spending, empirical-shaped path.
+
+[ha] qualitative co-movements:
+  C_positive: True
+  Y_T_positive: True
+  Y_NT_positive: True
+  p_ratio_negative: True
+  NX_negative: True
+  C_T_gt_C_NT: True
+  SS: G/Y=0.2143 A=0.6119 HtM=0.495 year-1 iMPC=0.527
+
+[ra] qualitative co-movements:
+  C_positive: False
+  Y_T_positive: True
+  Y_NT_positive: True
+  p_ratio_negative: True
+  NX_negative: False
+  C_T_gt_C_NT: True
+  SS: G/Y=0.2143 A=0.6119 HtM=0.495 year-1 iMPC=0.527
+
+[ha_lb] qualitative co-movements:
+  C_positive: True
+  Y_T_positive: True
+  Y_NT_positive: True
+  p_ratio_negative: True
+  NX_negative: True
+  C_T_gt_C_NT: True
+  SS: G/Y=0.2143 A=0.6119 HtM=0.495 year-1 iMPC=0.527
+
+[ra_lb] qualitative co-movements:
+  C_positive: False
+  Y_T_positive: False
+  Y_NT_positive: True
+  p_ratio_negative: True
+  NX_negative: False
+  C_T_gt_C_NT: True
+  SS: G/Y=0.2143 A=0.6119 HtM=0.495 year-1 iMPC=0.527
