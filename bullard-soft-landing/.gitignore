@@ -6,3 +6,14 @@ venv/
 .DS_Store
 papers/
 *.pdf
+!beamer/henk_seminar.pdf
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.vrb
