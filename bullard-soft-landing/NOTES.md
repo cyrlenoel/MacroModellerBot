@@ -39,8 +39,8 @@ Why did the post-pandemic US inflation surge end in a **soft landing** (disinfla
 
 ### Agents / structure
 - Stylized **New Keynesian** economy (NKPC + IS + Taylor-type rule).
-- Population of **J** agents (J even), identical except for **idiosyncratic subjective beliefs about long-run (steady-state) inflation** \(a_{j,t}\).
-- Aggregate subjective inflation expectation \(E_t^{SL}(\hat\pi_{t+1})\) is the cross-sectional average of individual forecasts.
+- Population of **J** agents (J even), identical except for **idiosyncratic subjective beliefs about long-run (steady-state) inflation** $a_{j,t}$.
+- Aggregate subjective inflation expectation $E_t^{SL}(\hat{\pi}_{t+1})$ is the cross-sectional average of individual forecasts.
 - **Only departure from RE:** information friction on long-run inflation via **social learning (SL)**. Output-gap expectations in the IS equation are treated as **rational / model-consistent** (internal rationality / quasi-RE observer).
 
 ### Log-linear block (WP eqs. 1–3 / §2.4 summary)
@@ -48,67 +48,74 @@ Why did the post-pandemic US inflation surge end in a **soft landing** (disinfla
 Notation: hats = deviations from steady state / target.
 
 1. **NK Phillips curve**
-   \[
-   \hat\pi_t = \kappa\,\hat y_t + \beta\, E_t^{SL}(\hat\pi_{t+1}) + u_t
-   \]
 
-2. **IS / aggregate demand** (standard grouping; WP typesets \(\sigma^{-1}(\hat\iota_t - E_t^{SL}\hat\pi_{t+1})\))
-   \[
-   \hat y_t = E_t(\hat y_{t+1}) - \sigma^{-1}\big(\hat\iota_t - E_t^{SL}(\hat\pi_{t+1})\big) + g_t
-   \]
+$$
+\hat{\pi}_t = \kappa\,\hat{y}_t + \beta\, E_t^{SL}(\hat{\pi}_{t+1}) + u_t
+$$
+
+2. **IS / aggregate demand** (standard grouping; WP typesets $\sigma^{-1}(\hat{\iota}_t - E_t^{SL}\hat{\pi}_{t+1})$)
+
+$$
+\hat{y}_t = E_t(\hat{y}_{t+1}) - \sigma^{-1}\big(\hat{\iota}_t - E_t^{SL}(\hat{\pi}_{t+1})\big) + g_t
+$$
 
 3. **Interest-rate rule**
-   \[
-   \hat\iota_t = \rho_\iota\,\hat\iota_{t-1} + (1-\rho_\iota)\big(\phi_\pi\,\hat\pi_t + \phi_y\,\hat y_t\big) + v_t
-   \]
+
+$$
+\hat{\iota}_t = \rho_\iota\,\hat{\iota}_{t-1} + (1-\rho_\iota)\big(\phi_\pi\,\hat{\pi}_t + \phi_y\,\hat{y}_t\big) + v_t
+$$
 
 4. **Subjective vs RE inflation expectations** (WP eq. 8 / §2.4)
-   \[
-   E_t^{SL}(\hat\pi_{t+1}) = \phi_t + E_t(\hat\pi_{t+1}),
-   \qquad
-   \phi_t \equiv \tfrac1J\sum_j a_{j,t},\quad
-   E_t(\phi_{t+1})=\phi_t
-   \]
-   Nested FIRE case: \(\phi_t=0\) for all \(t\) ⇒ \(E^{SL}=E\).
+
+$$
+E_t^{SL}(\hat{\pi}_{t+1}) = \phi_t + E_t(\hat{\pi}_{t+1}),
+\qquad
+\phi_t \equiv \tfrac{1}{J}\sum_j a_{j,t},\quad
+E_t(\phi_{t+1})=\phi_t
+$$
+
+Nested FIRE case: $\phi_t=0$ for all $t$ $\Rightarrow$ $E^{SL}=E$.
 
 ### Expectation formation — social learning `[VERIFIED` WP §2.3]
 Three-step recursive nonlinear process each period:
-1. **News / mutation** (sticky information, Calvo-like probability \(\mu\)):
-   \[
-   m_{j,t} = a_{j,t-1} + \mathbf{1}_{\varpi_{j,t}\le\mu}(\iota_{j,t}+\lambda_t)
-   \]
-2. **Fitness** from discounted squared forecast errors over inflation history (decay \(\rho\)).
+1. **News / mutation** (sticky information, Calvo-like probability $\mu$):
+
+$$
+m_{j,t} = a_{j,t-1} + \mathbf{1}_{\varpi_{j,t}\le\mu}(\iota_{j,t}+\lambda_t)
+$$
+
+2. **Fitness** from discounted squared forecast errors over inflation history (decay $\rho$).
 3. **Tournament**: agents paired; the more accurate belief is copied by both.
 
-Aggregate belief update: \(\phi_t = \phi_{t-1} + S(\cdot)\) with \(S\) nonlinear (no closed form); solved in practice with the authors’ **Dynare SL toolbox** (Grimaud, Salle & Vermandel, JEDC 2024 / forthcoming toolbox paper).
+Aggregate belief update: $\phi_t = \phi_{t-1} + S(\cdot)$ with $S$ nonlinear (no closed form); solved in practice with the authors’ **Dynare SL toolbox** (Grimaud, Salle & Vermandel, JEDC 2024 / forthcoming toolbox paper).
 
 ### Shocks `[VERIFIED` WP §2.4]
-- Demand: \(g_t = \rho_g g_{t-1} + \varepsilon_t^g - \mu_g\varepsilon_{t-1}^g\) (ARMA(1,1))
-- Cost-push: \(u_t = \rho_u u_{t-1} + \varepsilon_t^u - \mu_u\varepsilon_{t-1}^u\) (ARMA(1,1))
-- Monetary: \(v_t = \varepsilon_t^v\) (i.i.d.)
-- SL news: aggregate \(\lambda_t\), idiosyncratic \(\iota_{j,t}\)
+- Demand: $g_t = \rho_g g_{t-1} + \varepsilon_t^g - \mu_g\varepsilon_{t-1}^g$ (ARMA(1,1))
+- Cost-push: $u_t = \rho_u u_{t-1} + \varepsilon_t^u - \mu_u\varepsilon_{t-1}^u$ (ARMA(1,1))
+- Monetary: $v_t = \varepsilon_t^v$ (i.i.d.)
+- SL news: aggregate $\lambda_t$, idiosyncratic $\iota_{j,t}$
 
 ### Estimation sample / observables `[VERIFIED` WP §3]
 - Bayesian estimation with **inversion filter** (Cuba-Borda et al. 2019) for the nonlinear SL block.
 - Sample cited for Table 1: **1985Q1–2023Q4**.
 - Observables include macro series **and** SPF inflation expectations (exact measurement equations in WP §3.1 / App. A).
-- Calibrated: \(\beta=0.99\).
+- Calibrated: $\beta=0.99$.
 
 ### Key posterior means (Table 1, WP) `[VERIFIED]`
 
 | Parameter | Meaning | Posterior mean |
 |---|---|---|
-| \(\kappa\) | NKPC slope | 0.2032 |
-| \(\sigma\) | inv. IES | 1.6993 |
-| \(\phi_\pi\) | inflation stance | 1.7131 |
-| \(\phi_y\) | output stance | 0.1564 |
-| \(\rho_\iota\) | MPR smoothing | 0.8179 |
-| \(\rho_g,\rho_u\) | AR demand / cost-push | 0.7455 / 0.6328 |
-| \(\mu_g,\mu_u\) | MA demand / cost-push | 0.4579 / 0.4887 |
-| \(\sigma_g,\sigma_u,\sigma_v\) | shock stds | 0.0067 / 0.0043 / 0.0023 |
-| \(\sigma_\iota,\sigma_\lambda\) | idio. / agg. news std | 0.0006 / 0.0004 |
-| \(\rho\) (fitness decay) | | 0.7745 |
-| \(\mu\) (news frequency) | | 0.4357 |
+| $\kappa$ | NKPC slope | 0.2032 |
+| $\sigma$ | inv. IES | 1.6993 |
+| $\phi_\pi$ | inflation stance | 1.7131 |
+| $\phi_y$ | output stance | 0.1564 |
+| $\rho_\iota$ | MPR smoothing | 0.8179 |
+| $\rho_g,\rho_u$ | AR demand / cost-push | 0.7455 / 0.6328 |
+| $\mu_g,\mu_u$ | MA demand / cost-push | 0.4579 / 0.4887 |
+| $\sigma_g,\sigma_u,\sigma_v$ | shock stds | 0.0067 / 0.0043 / 0.0023 |
+| $\sigma_\iota,\sigma_\lambda$ | idio. / agg. news std | 0.0006 / 0.0004 |
+| $\rho$ (fitness decay) | | 0.7745 |
+| $\mu$ (news frequency) | | 0.4357 |
 
 ---
 
@@ -139,8 +146,8 @@ Aggregate belief update: \(\phi_t = \phi_{t-1} + S(\cdot)\) with \(S\) nonlinear
 1. **`[BLOCKED]`** Author replication codes (estimation, filters, counterfactual scripts, data construction) not publicly linked in materials found.
 2. **`[BLOCKED]`** Full SL tournament + inversion-filter estimation requires the **Dynare SL toolbox** + Matlab/Octave Dynare stack; not yet vendored here.
 3. **`[PROVISIONAL]`** Exact observable definitions, HP/Hamilton filter choices, and measurement of SPF moments — need WP §3.1 / App. A carefully transcribed (text extract is messy for tables/matrices).
-4. **`[PROVISIONAL]`** JME published version may differ slightly from Jan 7, 2025 WP (e.g. narrative cites \(\phi_\pi\approx 1.82\) in one place while Table 1 posterior mean is 1.7131 — **use Table 1** until JME PDF is available).
-5. Microfoundations App. B (Rotemberg costs ↔ \(\kappa\)) not yet coded.
+4. **`[PROVISIONAL]`** JME published version may differ slightly from Jan 7, 2025 WP (e.g. narrative cites $\phi_\pi\approx 1.82$ in one place while Table 1 posterior mean is 1.7131 — **use Table 1** until JME PDF is available).
+5. Microfoundations App. B (Rotemberg costs ↔ $\kappa$) not yet coded.
 
 ---
 
@@ -159,7 +166,7 @@ Aggregate belief update: \(\phi_t = \phi_{t-1} + S(\cdot)\) with \(S\) nonlinear
 ## Applied extension ideas (tied to the paper)
 
 1. **UK / BoE timing exercise.** Re-estimate or re-calibrate the same HENK structure on UK macro + UK SPF/CBI expectations and ask whether **timing vs strength** of BoE hikes 2021–23 similarly dominates inflation-scare containment (direct analogue of WP §4 counterfactuals).
-2. **Communication as anchoring device.** Follow the authors’ related SL/ELB work (Arifovic–Grimaud–Salle–Vermandel, *JMCB*): add CB announcements of the target / CB inflation forecasts into the fitness/tournament stage and quantify how much communication substitutes for earlier rate hikes in preventing \(\phi_t\) drift.
+2. **Communication as anchoring device.** Follow the authors’ related SL/ELB work (Arifovic–Grimaud–Salle–Vermandel, *JMCB*): add CB announcements of the target / CB inflation forecasts into the fitness/tournament stage and quantify how much communication substitutes for earlier rate hikes in preventing $\phi_t$ drift.
 
 ---
 
@@ -215,17 +222,17 @@ python3 src/timing_counterfactual.py --horizon 80 --seed 1 --surge-quarters 12 -
 python3 src/social_learning.py   # SL micro smoke test
 ```
 
-FIRE paths from `henk_sim` **nest** `re_nk_irf` on the monetary A,B block (phi=0, u=g=0).
+FIRE paths from `henk_sim` **nest** `re_nk_irf` on the monetary A,B block ($\phi=0$, $u=g=0$).
 
 ### Prototype metrics snapshot (2026-09-11, illustrative — `[PROVISIONAL]`)
 
 Cost-push **surge** (12 quarters × 0.01 innovations, MA(1) on, seed=1, J=100, delay=8):
 
-| scenario | peak π | min y | max\|φ\| |
+| scenario | peak $\pi$ | min $y$ | $\max\lvert\phi\rvert$ |
 |---|---:|---:|---:|
 | baseline (Table 1) | 0.0931 | −0.1687 | 0.0369 |
-| earlier (φ_π +10%, ρ_ι ×0.9 from t=0) | 0.0681 | −0.1584 | 0.0338 |
-| stronger_delayed (φ_π +10% from t=8) | 0.0752 | −0.1708 | 0.0369 |
+| earlier ($\phi_\pi$ +10%, $\rho_\iota$ ×0.9 from t=0) | 0.0681 | −0.1584 | 0.0338 |
+| stronger_delayed ($\phi_\pi$ +10% from t=8) | 0.0752 | −0.1708 | 0.0369 |
 
 Qualitative pattern is **consistent with** WP §4 narrative that **timing** beats delayed **strength** for peak inflation / scare containment in this prototype — **not** a claim of matching author Table 3 / historical-shock counterfactuals.
 
