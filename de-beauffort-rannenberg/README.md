@@ -35,6 +35,8 @@ Writes:
 - `output/irf_{ha,ra,ha_lb,ra_lb}.csv` — 20-quarter series in figure units
 - `output/figure3_summary.txt` — qualitative sign checks
 
+Seminar slides: `beamer/dbr_seminar.tex` (compile with `pdflatex dbr_seminar.tex` or `latexmk -pdf dbr_seminar.tex` from `beamer/`). Compiled review copy: `beamer/dbr_seminar.pdf`.
+
 ## Parameters (cited)
 
 | Symbol | Role | Value | Source |
@@ -72,6 +74,7 @@ de-beauffort-rannenberg/
   EXTENDING.md     # how to add another domestic sector later
   README.md
   requirements.txt
+  beamer/          # academic seminar slides (dbr_seminar.tex + dbr_seminar.pdf)
   src/
     sectors.py          # TRADABLE / NONTRADABLE labels
     calibration.py      # Table 2 + consistent SS

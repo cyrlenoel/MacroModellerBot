@@ -1,0 +1,517 @@
+% Fiscal policy and sectoral spillovers --- academic seminar slides
+% Prototype talk for de Beauffort & Rannenberg
+%   NBB Working Paper No. 493 (June 2026)
+%
+% Compile from this directory:
+%   pdflatex dbr_seminar.tex
+%   latexmk -pdf dbr_seminar.tex
+%
+% Figure: figures/figure3.png (Python + sequence-jacobian prototype IRF).
+% Fallback search path: ../output/ if the PNG is regenerated there.
+\documentclass[11pt,aspectratio=169]{beamer}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize items}[circle]
+\setbeamerfont{footnote}{size=\tiny}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{array}
+
+\graphicspath{{figures/}{../output/}}
+
+% Cite the NBB WP in-text; equations/Table 2 follow the public PDF.
+\newcommand{\paper}{de Beauffort and Rannenberg (2026)}
+
+\title[Fiscal policy \& sectoral spillovers]{Fiscal Policy and Sectoral Spillovers}
+\subtitle{\texorpdfstring{Two-sector open-economy HANK\\
+{\normalsize Seminar notes on \paper}}{Open-economy HANK seminar notes}}
+\author[Prototype slides]{\texorpdfstring{Open-source notes on NBB Working Paper No.~493\\
+{\small not the authors' replication package}}{Open-source prototype slides (not the authors' package)}}
+\institute[MacroModellerBot]{\texttt{de-beauffort-rannenberg/} in MacroModellerBot}
+\date{September 2026}
+
+\begin{document}
+
+%----------------------------------------------------------------------
+\begin{frame}[plain]
+  \titlepage
+  \vspace{-1.2em}
+  \begin{center}
+    {\footnotesize
+    Source paper: \paper, NBB WP~493 (June 2026),\\
+    ``Fiscal policy and sectoral spillovers in open-economy HANK.''}
+  \end{center}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Outline}
+  \tableofcontents
+  \vspace{0.8em}
+  {\footnotesize Two tracks, in that order: the \emph{paper} (literature, two-sector
+  open HANK, claims), then what this repo's Python / sequence-jacobian
+  \emph{prototype} actually does.}
+\end{frame}
+
+%======================================================================
+\section{Literature}
+%----------------------------------------------------------------------
+\begin{frame}{Why fiscal non-tradables?}
+  \begin{block}{Core question \paper}
+    Government spending falls disproportionately on \emph{non-tradable services}.
+    Empirically, a spending shock still raises private consumption, raises goods
+    \emph{and} services output, \emph{lowers} the relative price of goods, and
+    \emph{worsens} net exports.
+  \end{block}
+  \begin{itemize}
+    \item A two-sector open RANK with the same $G$ bias does \emph{not} deliver
+          those co-movements---especially when $G$ is purely non-tradable.
+    \item The paper asks whether \textbf{household heterogeneity} plus
+          \textbf{trade openness} can generate the consumption-led spillover
+          from fiscal non-tradables into the goods sector.
+    \item That is a statement about \textbf{sectoral fiscal multipliers} in an
+          open economy, not about a one-sector closed-economy multiplier.
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Open-economy HANK, fiscal--monetary, T vs.\ NT}
+  \begin{itemize}
+    \item \textbf{Fiscal HANK.}
+          Incomplete markets and high iMPCs reverse RANK crowding-out of $C$
+          (Kaplan, Moll and Violante 2018; Auclert, Rognlie and Straub on the
+          intertemporal Keynesian cross and iMPCs). Sticky information
+          (Auclert, Rognlie and Straub 2020) turns jumps into humps---used
+          here with $\vartheta=0.935$.
+    \item \textbf{Open-economy HANK.}
+          Heterogeneous agents change exchange-rate and trade transmission
+          (Auclert, Rognlie, Souchier and Straub; de Ferra, Mitman and Romei).
+          Fiscal leakage through imports is no longer a representative-agent
+          Euler residual.
+    \item \textbf{Sectoral T / NT.}
+          Distribution costs (Corsetti and Dedola 2005) and imperfect labour
+          mobility (Horvath) break wage pass-through from NT into tradable
+          prices. Composition of $G$ then matters for relative prices.
+    \item \textbf{This talk.}
+          Paper first (S-BVAR facts, two-sector open HANK, claims), then an
+          honest status report on the open-source Figure~3 prototype---not
+          the authors' files.
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{RANK vs.\ HANK fiscal transmission}
+  \begin{itemize}
+    \item \textbf{RANK.}
+          Ricardian households. A financed rise in $G$ raises the present
+          value of taxes and typically \emph{crowds out} private consumption.
+          In an open RANK, expenditure switching and import leakage can move
+          NX, but the consumption-led spillover to tradables is missing when
+          $G$ itself has little tradable content.
+    \item \textbf{HANK.}
+          Uninsurable income risk and a borrowing constraint $a\ge 0$ produce
+          a mass of high-iMPC households. Labour income from NT production
+          raises $C$ on impact; CES demand then spills into goods.
+    \item \textbf{Openness is not a sideshow.}
+          Import intensity and limited labour reallocation dampen wage
+          pass-through to tradable prices. Relative goods prices can
+          \emph{fall} even as $Y_T$ rises; NX can deteriorate while $Y_T$
+          still co-moves positively (expenditure switching).
+    \item \textbf{Paper's identification of the mechanism.}
+          Nested RANK vs.\ HANK, and a $\phi_{GT}=0$ (pure NT) counterfactual:
+          HANK keeps $Y_T>0$; RANK does not.
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Four stylised facts (S-BVAR)}
+  Empirical block (WP \S2): Blanchard--Perotti identification, U.S.\
+  1954Q1--2019Q4, nine variables, four lags, NIW prior.
+  Shock: orthogonal \textbf{1\% of output} increase in $G$.
+  \begin{enumerate}
+    \item Private consumption \textbf{rises} (crowding-in, not RANK crowding-out).
+    \item Output rises in \textbf{goods and services}.
+    \item The relative price of goods \textbf{falls}.
+    \item Net exports \textbf{deteriorate}.
+  \end{enumerate}
+  \vspace{0.4em}
+  {\footnotesize
+  The theoretical $G$ path is the empirical IRF (``does not follow a hump-shaped
+  path'', \S4.3). This repo uses a 20-quarter path digitised from Figure~3's
+  $G$ panel \textbf{[PROVISIONAL]}, not the authors' series.}
+\end{frame}
+
+%======================================================================
+\section{The model}
+%----------------------------------------------------------------------
+\begin{frame}{Two-sector open HANK at a glance}
+  \begin{itemize}
+    \item Domestic production: \textbf{tradables} ($T$, goods) and
+          \textbf{non-tradables} ($NT$, services). Linear technology
+          $Y_S=N_S$; flexible goods prices, sticky wages only (baseline).
+    \item Incomplete-markets households; hours set by sectoral unions
+          ($n_{S,t}(i)=N_{S,t}$). Nested RANK counterpart: same aggregates,
+          Euler instead of the HA Jacobian.
+    \item Fiscal $G$ is CES-split with $\phi_{GT}=0.25$ (OECD COFOG tradable
+          content); HA-LB / RA-LB set $\phi_{GT}=0$.
+    \item Small open economy: CES home/foreign, Corsetti--Dedola distribution,
+          UIP with an NFA wedge, tax rule on debt, Taylor rule on CPI.
+    \item Solution: perfect-foresight MIT shocks, sequence-space Jacobians,
+          linearised (Auclert, Bard\'oczy, Rognlie and Straub 2021).
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Households (WP \S3.1)}
+  \begin{itemize}
+    \item Incomplete markets, $a\ge 0$, idiosyncratic $e_t$ AR(1)
+          ($\rho_e=0.968$). Post-tax labour income
+          \[
+            z_t(i)=(w_T N_T+w_{NT}N_{NT}-T_t)\,e_t(i).
+          \]
+    \item Utility (4) with $\sigma=\varphi=1$. Households choose $c,a$ only;
+          hours are union-set.
+    \item CES demands: $T$ vs.\ $NT$ ($\lambda_t=2.15$, $\phi_t=0.623$);
+          home vs.\ foreign with trade elasticity $\lambda_d=1$
+          (Cobb--Douglas; 12\% import/GDP via $\phi_d=0.57$).
+    \item Sticky expectations, share $\vartheta=0.935$ that does not update
+          (paper eq.\ 13 / Auclert--Rognlie--Straub mapping).
+    \item Nested RANK: same budget, representative Euler, same $r$
+          ($\beta_{RA}=0.995$ vs.\ $\beta_{HA}=0.986$).
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Production, labour, distribution}
+  \begin{itemize}
+    \item Flexible prices: $P_Z=W_S$ (eq.\ 14). Sticky-price Appendix~C is
+          not in the baseline DAG.
+    \item Imperfect labour mobility: Horvath aggregator (9), $\lambda_l=1$.
+          Sectoral wage Phillips curves (12), slope $\kappa_w=0.0044$
+          (Lind\'e et al.\ 2016), $\theta_w=3$ (50\% markup).
+    \item Distribution (Corsetti--Dedola, eqs.\ 28--31): local NT services
+          are bundled into retail prices of domestic and imported tradables
+          ($\mu_d=0.266$, $\mu_f=0.754$). That is the sectoral \emph{cost}
+          channel from NT wages into $T$ prices.
+    \item Output identities (34)--(35): $Y_T$ is domestic tradables plus
+          exports; $Y_{NT}$ is services plus distribution margins.
+  \end{itemize}
+  \vfill
+  {\scriptsize Seminar reading: limited labour reallocation plus distribution
+  costs let NT demand raise $Y_{NT}$ without immediately bidding up goods
+  prices one-for-one---the relative $T/NT$ price can fall.}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Fiscal, monetary, open economy}
+  \begin{align}
+    T_t &= T_{ss}+\kappa_b(B_{t-1}-B_{ss})
+      \tag{tax, 21} \\[0.2em]
+    i_t &= \zeta\, i_{t-1}+(1-\zeta)(i^\ast+\kappa_\pi\pi_t)
+      \tag{Taylor, 22}
+  \end{align}
+  \begin{itemize}
+    \item $G$ exogenous; CES split (16)--(19) with $\phi_{GT}=0.25$,
+          $\phi^G_d=1$. Budget (20). $\kappa_b=0.027$, $\zeta=0.9$,
+          $\kappa_\pi=1.5$.
+    \item Mutual fund / UIP (23)--(26). Paper:
+          $\Gamma_t=\exp(-10^{-9}\,\mathrm{nfa}_t)$.
+    \item Exports $X_t=C^\ast_{F,t}/(1+\mu_f)$; imports through the
+          distribution wedge. Goods/asset clearing (36)--(37).
+    \item SSJ DAG: unknowns $(Y_T,Y_{NT},w_T,w_{NT},\pi,Q,i,B,\mathrm{nfa})$;
+          $\mathtt{goods\_NT}$ dropped by Walras (household + government +
+          NFA laws of motion).
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Table 2 (paper) vs.\ what we feed the computer}
+  \begin{center}
+  {\footnotesize
+  \begin{tabular}{@{}lrlr@{}}
+    \toprule
+    Param.\ (Table 2) & Value & Param.\ & Value \\
+    \midrule
+    $\beta_{RA}$, $\beta_{HA}$ & 0.995, 0.986 & $\phi_t$, $\lambda_t$ & 0.623, 2.15 \\
+    $\theta_w$, $\kappa_w$ & 3, 0.0044 & $\phi_d$, $\lambda_d$ & 0.57, 1 \\
+    $\sigma$, $\varphi$ & 1, 1 & $\mu_f$, $\mu_d$ & 0.754, 0.266 \\
+    $\rho_e$, $\vartheta$ & 0.968, 0.935 & $\zeta$, $\kappa_\pi$ & 0.9, 1.5 \\
+    $\phi_{GT}$, $\kappa_b$ & 0.25, 0.027 & $\phi^G_d$ & 1 \\
+    \bottomrule
+  \end{tabular}
+  }
+  \end{center}
+  \vspace{0.3em}
+  \begin{itemize}
+    \item All of the above are \textbf{[VERIFIED]} in \texttt{TABLE2}.
+    \item \textbf{[PROVISIONAL]} (NOTES.md; later slide): $\sigma_e=0.35$
+          rather than Table~2's $0.58$; $\psi_{\mathrm{nfa}}=10^{-3}$ rather
+          than $10^{-9}$; $G/Y$ and $\phi_l$ implied by adding-up.
+    \item Estimation of the S-BVAR itself is \textbf{not} in this repo.
+  \end{itemize}
+\end{frame}
+
+%======================================================================
+\section{Contributions}
+%----------------------------------------------------------------------
+\begin{frame}{What the NBB WP adds}
+  Relative to one-sector HANK and to open-economy RANK fiscal:
+  \begin{itemize}
+    \item An \textbf{empirical} four-fact package: crowding-in of $C$,
+          positive goods \emph{and} services output, a decline in the
+          relative goods price, and a deterioration of NX after a $G$ shock
+          that is concentrated in NT services.
+    \item A \textbf{two-sector open HANK} in which uninsurable income risk
+          and precautionary saving produce a persistent income-driven
+          expansion in $C$; import intensity and limited labour reallocation
+          dampen wage pass-through to goods prices.
+    \item \textbf{Expenditure switching} then yields $Y_T>0$ even as NX
+          worsens---and even when $\phi_{GT}=0$. Nested RANK fails that
+          test.
+    \item Quantitative message: \textbf{household heterogeneity and trade
+          openness jointly} shape sectoral fiscal multipliers. Composition
+          of $G$ is not a sideshow.
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{What this open-source prototype adds}
+  Honest split vs.\ the published paper:
+  \begin{itemize}
+    \item \textbf{Runnable Python + sequence-jacobian} two-sector open HANK
+          / nested RANK DAG, linear MIT-shock IRFs, and a Figure~3 layout
+          (HA, RA, HA-LB, RA-LB, digitised S-BVAR overlay).
+    \item Table~2 parameters in \texttt{calibration.py}; qualitative sign
+          checks in \texttt{test\_qualitative.py} / \texttt{figure3\_summary.txt}.
+    \item Documented \textbf{[PROVISIONAL]} closures needed to complete the
+          DAG (next slides): $\sigma_e$, UIP wedge, digitised $G$ / S-BVAR,
+          foreign export demand, distribution on $G_D$.
+    \item \textbf{Does not} reproduce author IRF numbers, S-BVAR 68\% bands,
+          Figure~4 international panel (as the main artefact), or
+          Appendices~B--D. No official replication package / S-BVAR data
+          were found.
+  \end{itemize}
+\end{frame}
+
+%======================================================================
+\section{Results and discussion}
+%----------------------------------------------------------------------
+\begin{frame}{Prototype IRF: Figure~3 layout}
+  \begin{center}
+    \includegraphics[width=\textwidth,height=0.68\textheight,keepaspectratio]%
+      {figure3.png}
+  \end{center}
+  {\scriptsize Python + sequence-jacobian 1.0.0 prototype; 1\% of GDP $G$
+  shock, empirical-shaped path; $\sigma_e=0.35$, $\psi_{\mathrm{nfa}}=10^{-3}$.
+  S-BVAR markers are hand-digitised from WP 493 Figure~3.
+  \textbf{[PROVISIONAL]} not the authors' numerical IRFs.}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Qualitative co-movements (this code)}
+  Signs from \texttt{output/figure3\_summary.txt} (near-term averages),
+  matching the paper's main message---\emph{not} author magnitudes:
+  \begin{center}
+  {\footnotesize
+  \begin{tabular}{@{}lcccc@{}}
+    \toprule
+    Fact & HA & HA-LB & RA & RA-LB \\
+    \midrule
+    $C>0$ & yes & yes & no (falls) & no \\
+    $Y_T>0$ & yes & yes & yes (from $\phi_{GT}$) & \textbf{no} \\
+    $Y_{NT}>0$ & yes & yes & yes & yes \\
+    $P_T/P_{NT}$ down & yes & yes & yes (smaller) & yes \\
+    NX down & yes & yes & no (tiny $+$) & no \\
+    $C_T>C_{NT}$ response & yes & yes & yes & yes \\
+    \bottomrule
+  \end{tabular}
+  }
+  \end{center}
+  \begin{itemize}
+    \item Heterogeneity delivers the consumption-led spillover to tradables;
+          RANK does not, especially when $G$ is purely non-tradable.
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Mechanism, and what is \emph{not} claimed}
+  \begin{itemize}
+    \item \textbf{HANK mechanism (paper).}
+          NT-biased $G$ $\to$ labour income $\to$ high iMPC consumption
+          $\to$ CES demand for goods $\to$ $Y_T>0$ even if $\phi_{GT}=0$.
+          Distribution + imperfect mobility: $P_T/P_{NT}$ can fall.
+          Openness: NX deteriorates while expenditure switching supports
+          $Y_T$.
+    \item \textbf{RANK contrast.}
+          $C$ falls. With $\phi_{GT}=0.25$, $Y_T$ can still rise from the
+          tradable content of $G$; with $\phi_{GT}=0$, that co-movement
+          disappears.
+    \item \textbf{Known shape gaps vs.\ the published figure}
+          (NOTES.md; this code):
+          HA $C$ is a bit too front-loaded (sticky-info hump milder);
+          HA $Y_T$ does not reproduce the empirical hump;
+          HA NX stays negative too long (the authors note a medium-run NX
+          undershoot);
+          RANK NX is a small surplus rather than a small deficit.
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Why this matters for recent fiscal / open-economy debates}
+  \begin{itemize}
+    \item \textbf{Composition of $G$.}
+          Much public spending is services (health, education,
+          administration). Multipliers quoted on aggregate $G$ hide a
+          T / NT split; the paper's $\phi_{GT}=0.25$ is the empirically
+          relevant bias, not a knife-edge.
+    \item \textbf{Crowding-in vs.\ crowding-out.}
+          Post-COVID fiscal packages revived the RANK prediction that $C$
+          should fall. The S-BVAR sample here ends in 2019Q4; the
+          \emph{mechanism}---high iMPCs plus NT-biased $G$---is the relevant
+          object for those debates, not a COVID-period estimate.
+    \item \textbf{Openness and leakage.}
+          Import intensity need not kill the goods-sector multiplier:
+          expenditure switching can raise $Y_T$ even as NX worsens.
+          Closed-economy HANK misses that joint restriction.
+    \item \textbf{Relative prices.}
+          A fiscal expansion that is NT-heavy can \emph{lower} goods prices
+          relative to services---a sectoral relative-price fact, not a
+          one-sector inflation multiplier.
+  \end{itemize}
+\end{frame}
+
+%======================================================================
+\section{What the repo prototype achieves}
+%----------------------------------------------------------------------
+\begin{frame}[fragile]{Runnable artefacts}
+  \textbf{Runs today} (Python + sequence-jacobian; Table~2 params unless noted):
+  \begin{itemize}
+    \item Two-sector open HANK (sticky-info HA) and nested RANK.
+    \item $\phi_{GT}=0.25$ baseline and $\phi_{GT}=0$ (LB) variants.
+    \item Figure~3 PNG + 20-quarter CSVs + qualitative summary.
+    \item Smoke test of HA signs, RANK $C<0$, and RA-LB $Y_T\not>0$.
+  \end{itemize}
+  {\scriptsize
+  \begin{verbatim}
+cd de-beauffort-rannenberg
+python3 src/run_figure3.py
+python3 src/run_figure3.py --sigma-e 0.35 --psi-nfa 1e-3
+python3 src/run_figure3.py --T 80 --skip-lb   # faster smoke
+python3 src/test_qualitative.py
+  \end{verbatim}
+  }
+  Writes \texttt{output/figure3.png}, \texttt{irf\_\{ha,ra,ha\_lb,ra\_lb\}.csv},
+  \texttt{figure3\_summary.txt}.
+
+  \textbf{Does not run:} author S-BVAR estimation, exact $G$ vector,
+  Appendix~C sticky prices, Appendix~D 25\% import share.
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Calibration knobs and caveats}
+  \begin{itemize}
+    \item \textbf{$\sigma_e$.}
+          Table~2 lists $0.58$. Used as the SSJ Rouwenhorst unconditional SD
+          of $\log e$, that misses Table~1 ($iMPC_1\approx 0.24$, HtM $\approx 20\%$).
+          Default here: \texttt{-{-}sigma-e 0.35}, which hits Table~1
+          $iMPC_1\approx 0.51$ and HtM $\approx 49.7\%$ given $\beta_{HA}$
+          and $r=1/\beta_{RA}-1$ \textbf{[PROVISIONAL]}.
+    \item \textbf{UIP wedge.}
+          Paper $\psi_{\mathrm{nfa}}=10^{-9}$; CLI default
+          \texttt{-{-}psi-nfa 1e-3} for a stable linear solve
+          \textbf{[PROVISIONAL]}.
+    \item \textbf{S-BVAR overlay} in \texttt{empirical\_sbvar.py}: hand-read
+          from Figure~3, not the authors' series \textbf{[PROVISIONAL]}.
+    \item \textbf{Other closures} (NOTES.md): $G/Y\approx 0.214$ implied by
+          12\% import/GDP; $\phi_l$ set to sectoral hours shares so both
+          wage PCs hold at $w=1$; distribution margin on $G_D$ for labour
+          income $=$ GDP; SOE export demand with $C^\ast$ fixed; SSJ
+          ex-post $r=$ lagged ex-ante.
+  \end{itemize}
+\end{frame}
+
+%======================================================================
+\section{Simplifying assumptions}
+%----------------------------------------------------------------------
+\begin{frame}{What is on, what is shut off}
+  \textbf{In the paper's baseline:}
+  \begin{itemize}
+    \item Two domestic sectors only; linear technology; flexible prices /
+          sticky wages (not sticky prices).
+    \item Hours set by unions; incomplete markets with $a\ge 0$; sticky
+          expectations on the HA Jacobian.
+    \item SOE: foreign variables at SS; Cobb--Douglas trade ($\lambda_d=1$);
+          Horvath $\lambda_l=1$; $\phi_{GT}=0.25$.
+  \end{itemize}
+  \textbf{Extra prototype approximations (not author codes):}
+  \begin{itemize}
+    \item $\sigma_e=0.35$ vs.\ Table~2 $0.58$; $\psi_{\mathrm{nfa}}=10^{-3}$
+          vs.\ $10^{-9}$; digitised $G$ and S-BVAR; provisional foreign
+          CES / distribution on $G_D$; SSJ $r$ timing.
+  \end{itemize}
+  \textbf{Shut off in both (baseline script):}
+  Appendix~C sticky prices; Appendix~D 25\% import share; Figure~4
+  international panel as the main artefact; official S-BVAR data.
+\end{frame}
+
+%======================================================================
+\section{Extensions}
+%----------------------------------------------------------------------
+\begin{frame}{Future developments that fit this codebase}
+  \begin{enumerate}
+    \item \textbf{N-sector sketch} (\texttt{EXTENDING.md} / \texttt{sectors.py}).
+          Today \texttt{DOMESTIC\_SECTORS = (T, NT)}; blocks are still
+          explicit two-sector objects. Generate per-sector wage PC / hours /
+          demand from that tuple instead of copy-pasting $T$/$NT$.
+    \item \textbf{Nesting, not a monolith.}
+          A third sector $S$ needs an explicit CES / distribution / tradable
+          status. Keep trade, UIP, and the HA Jacobian as separate SSJ
+          blocks. Walras: still drop \emph{exactly one} sectoral goods
+          residual.
+    \item \textbf{Paper appendices} (DAG is extensible).
+          Sticky prices (App.~C); 25\% import share (App.~D); Figure~4
+          international panel as a first-class artefact.
+    \item \textbf{Blocked on data/codes.}
+          Official replication files, S-BVAR data, exact $G$ IRF vector,
+          fully specified foreign block.
+    \item \textbf{Later synthesis} (not this folder): two-sector open HANK
+          fiscal + heterogeneous-expectation NK (the HENK companion in this
+          repo) for a fuller post-COVID accounting.
+  \end{enumerate}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Takeaways}
+  \begin{itemize}
+    \item NT-biased government spending can still raise $C$, raise $Y_T$
+          \emph{and} $Y_{NT}$, lower $P_T/P_{NT}$, and worsen NX---if
+          households are incomplete-markets and the economy is open.
+    \item Nested RANK fails that package, especially when $\phi_{GT}=0$.
+          Heterogeneity, not the tradable content of $G$, is the spillover.
+    \item This repo is a transparent Figure~3 starter: Python + SSJ DAG,
+          qualitative HANK vs.\ RANK signs, documented provisional
+          $\sigma_e$ / UIP / S-BVAR closures---not a numerical replica of
+          the authors' IRFs.
+    \item The natural extension is a labelled multi-sector open DAG, not a
+          one-file N-sector solver.
+  \end{itemize}
+  \vfill
+  {\scriptsize
+  \textbf{Selected references.}
+  de Beauffort and Rannenberg (2026), NBB WP~493;
+  Auclert, Bard\'oczy, Rognlie and Straub (2021);
+  Auclert, Rognlie and Straub (2020);
+  Auclert, Rognlie, Souchier and Straub;
+  Kaplan, Moll and Violante (2018);
+  Corsetti and Dedola (2005);
+  de Ferra, Mitman and Romei.
+  Compile: \texttt{pdflatex dbr\_seminar.tex} from
+  \texttt{de-beauffort-rannenberg/beamer/}.}
+\end{frame}
+
+\end{document}
