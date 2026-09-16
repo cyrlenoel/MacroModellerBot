@@ -1,0 +1,533 @@
+% Soft landing and inflation scares — academic seminar slides
+% Replication / prototype talk for Bullard, Grimaud, Salle & Vermandel
+%   Tinbergen Institute Discussion Paper TI 2025-001/VI (7 Jan 2025)
+%   JME 157 (2026), 103871
+%
+% Compile from this directory:
+%   pdflatex henk_seminar.tex
+%   latexmk -pdf henk_seminar.tex
+%
+% Figure: figures/irf_costpush_fire_vs_sl.png (Python prototype IRF).
+% Fallback search path: ../output/ if the PNG is regenerated there.
+\documentclass[11pt,aspectratio=169]{beamer}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize items}[circle]
+\setbeamerfont{footnote}{size=\tiny}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+
+\graphicspath{{figures/}{../output/}}
+
+\newcommand{\paper}{Bullard, Grimaud, Salle and Vermandel (2025)}
+\newcommand{\Esl}{E_t^{\mathrm{SL}}}
+\newcommand{\Ere}{E_t}
+
+\title[Soft landing \& inflation scares]{Soft Landing and Inflation Scares}
+\subtitle{\texorpdfstring{Heterogeneous-expectation New Keynesian (HENK) dynamics\\
+{\normalsize Replication / prototype seminar slides for \paper}}{HENK replication / prototype seminar slides}}
+\author[Prototype slides]{\texorpdfstring{Open-source notes on the Tinbergen DP / JME model\\
+{\small not the authors' replication package}}{Open-source prototype slides (not the authors' package)}}
+\institute[MacroModellerBot]{\texttt{bullard-soft-landing/} in MacroModellerBot}
+\date{September 2026}
+
+\begin{document}
+
+%----------------------------------------------------------------------
+\begin{frame}[plain]
+  \titlepage
+  \vspace{-1.2em}
+  \begin{center}
+    {\footnotesize
+    Source paper: \paper, Tinbergen Institute DP 2025-001\\
+    (``Soft Landing and Inflation Scares''); JME 157 (2026), 103871.}
+  \end{center}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Outline}
+  \tableofcontents
+\end{frame}
+
+%======================================================================
+\section{Literature}
+%----------------------------------------------------------------------
+\begin{frame}{Why a soft landing?}
+  \begin{block}{Core question \paper}
+    Why did the post-pandemic U.S.\ inflation surge end in a
+    \emph{soft landing}---disinflation without a major recession---unlike
+    Volcker-era disinflation?
+  \end{block}
+  \begin{itemize}
+    \item Standard FIRE New Keynesian models struggle to generate
+          \emph{unanchored} long-run inflation beliefs after a transitory
+          cost-push surge.
+    \item The paper asks whether the \textbf{timing} and \textbf{strength}
+          of the Fed's reaction matter when long-run inflation expectations
+          are \textbf{heterogeneous} and can lose their anchor to the target.
+    \item That unanchoring is an \textbf{inflation scare} in the sense of
+          Goodfriend (1993): a rise in perceived trend inflation that
+          raises the real cost of subsequent disinflation.
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Soft landing vs.\ inflation-scare literature}
+  \begin{itemize}
+    \item \textbf{Goodfriend (1993).}
+          Inflation scares are shifts in long-run inflation beliefs that
+          force the central bank to choose between validating the scare
+          and inflicting a recession. The 1980s disinflations are the
+          classic case.
+    \item \textbf{Post-COVID debate.}
+          Was 2021--23 a transitory relative-price shock (FIRE-like), or
+          a scare in which the distribution of trend-inflation beliefs
+          moved? \paper{} take the second view.
+    \item \textbf{Policy timing.}
+          The abstract's claim is that \emph{when} the Fed tightened
+          matters more than how large a later hike would have been for
+          containing the scare (WP \S4 counterfactuals).
+    \item \textbf{This talk.}
+          Situates that argument in a 3-equation HENK block, then reports
+          what the open-source Python/Dynare prototype in this repo
+          actually implements---not the authors' estimated Table~3 paths.
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{FIRE vs.\ learning / heterogeneous expectations}
+  \begin{itemize}
+    \item \textbf{FIRE NK.}
+          A single rational forecast; $\phi_t\equiv 0$. Cost-push inflation
+          is temporary once the shock decays. Nested as the paper's
+          homogeneous-belief special case.
+    \item \textbf{Adaptive / statistical learning}
+          (Evans and Honkapohja 2001; Hommes 2021 survey):
+          agents estimate perceived laws of motion; mean beliefs can drift.
+    \item \textbf{Social learning (SL)}
+          (Grimaud, Salle and Vermandel 2025, JEDC toolbox paper):
+          a finite population copies better-performing inflation intercepts
+          (news $\to$ fitness $\to$ tournament). Dispersion is an
+          \emph{object}, not a residual.
+    \item \textbf{HENK contribution.}
+          Only long-run \emph{inflation} beliefs are non-FIRE; output-gap
+          expectations in the IS curve remain model-consistent
+          (internal rationality / quasi-RE observer).
+    \item Closed form retains the \emph{entire} time-varying cross-section
+          of subjective intercepts $\{a_{j,t}\}$, not just the mean.
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Related companions}
+  \begin{itemize}
+    \item \textbf{Toolbox.}
+          Grimaud, Salle and Vermandel (2025), \emph{A Dynare toolbox for
+          social learning expectations}, JEDC; Mendeley
+          \texttt{fzmx3vkt66}. Authors solve HENK with this stack.
+    \item \textbf{Communication / ELB.}
+          Arifovic, Grimaud, Salle and Vermandel (\emph{JMCB}):
+          central-bank announcements in the SL fitness stage as an
+          anchoring device---a natural companion to rate-hike timing.
+    \item \textbf{Contrast, not synthesis} (NOTES.md digest):
+          Kaplan and Miyahara (NBER WP 35400)---HANK plus state-dependent
+          pricing; Angeletos, Lian, Wolf and Zhang (NBER WP 35642)---
+          fiscal-monetary interactions under finite-horizon refinements.
+          Those papers stress \emph{balance-sheet} heterogeneity; HENK
+          stresses \emph{belief} heterogeneity in an otherwise RANK NK.
+    \item Experience-based anchoring (Malmendier--Nagel style) and
+          finite planning horizons are \emph{not} in the estimated HENK
+          block; they sit in the same unanchoring queue (see extensions).
+  \end{itemize}
+\end{frame}
+
+%======================================================================
+\section{The model}
+%----------------------------------------------------------------------
+\begin{frame}{HENK at a glance}
+  \begin{itemize}
+    \item Stylized NK economy: NKPC + Euler/IS + Taylor rule with smoothing.
+    \item Population of $J$ agents (even), identical except for idiosyncratic
+          long-run inflation intercepts $a_{j,t}$.
+    \item Aggregate SL inflation forecast $=$ cross-sectional average of
+          individual forecasts.
+    \item \textbf{Only departure from RE:} information friction on long-run
+          inflation via social learning. Output-gap leads stay rational.
+    \item Hats $=$ deviations from steady state / inflation target.
+  \end{itemize}
+  \vfill
+  \begin{block}{Belief wedge (WP eq.\ 8)}
+    \[
+      \Esl(\hat\pi_{t+1})
+      = \phi_t + \Ere(\hat\pi_{t+1}),
+      \qquad
+      \phi_t \equiv \tfrac1J\sum_{j=1}^J a_{j,t}.
+    \]
+    Nested FIRE: $\phi_t=0$ for all $t$ $\Rightarrow$ $\Esl=\Ere$.
+  \end{block}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Aggregate block (WP eqs.\ 1--3)}
+  \begin{align}
+    \hat\pi_t
+      &= \kappa\,\hat y_t
+         + \beta\,\Esl(\hat\pi_{t+1})
+         + u_t
+      \tag{NKPC} \\[0.4em]
+    \hat y_t
+      &= \Ere(\hat y_{t+1})
+         - \sigma^{-1}\bigl(
+             \hat\iota_t - \Esl(\hat\pi_{t+1})
+           \bigr)
+         + g_t
+      \tag{IS} \\[0.4em]
+    \hat\iota_t
+      &= \rho_\iota\,\hat\iota_{t-1}
+         + (1-\rho_\iota)
+           \bigl(\phi_\pi\,\hat\pi_t + \phi_y\,\hat y_t\bigr)
+         + v_t
+      \tag{Taylor}
+  \end{align}
+  \begin{itemize}
+    \item Cost-push $u_t$ and demand $g_t$ are ARMA(1,1); monetary $v_t$
+          is white noise (WP \S2.4).
+    \item Seminar-level reading: a scare ($\phi_t\uparrow$) acts like a
+          persistent inflation shock in the NKPC \emph{and} eases the
+          ex-ante real rate in the IS curve.
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Martingale beliefs and the PLM}
+  \begin{block}{Assumption 2 (WP)}
+    \[
+      \Ere(\phi_{t+1})=\phi_t
+      \qquad\text{(random-walk / martingale mean belief).}
+    \]
+  \end{block}
+  \begin{itemize}
+    \item Individual perceived law of motion (WP eq.\ 6):
+          \[
+            \hat\pi_t^{(j)}
+            = a_{j,t}
+              + P_{1,\bullet}\,\hat z_{t-1}
+              + \widetilde Q_{1,\bullet}\,E_t.
+          \]
+    \item Full MSV rows $P,\widetilde Q$ come from the Dynare SL toolbox
+          (\texttt{SL\_get\_pq}); they are \textbf{not} recovered from the
+          WP text alone.
+    \item Prototype stand-in for fitness (documented provisional):
+          \[
+            \mathbb{E}[\pi_s\mid m]
+            = m + A_\pi i_{s-1} + D_\pi u_s + G_\pi g_s + B_\pi v_s.
+          \]
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Social learning (WP eqs.\ 10--12)}
+  Three-step recursive process each period, $j=1,\ldots,J$:
+  \begin{enumerate}
+    \item \textbf{News / mutation} (Calvo-like probability $\mu$):
+          \[
+            m_{j,t}
+            = a_{j,t-1}
+              + \mathbf{1}_{\{\varpi_{j,t}\le\mu\}}
+                \,(\iota_{j,t}+\lambda_t).
+          \]
+    \item \textbf{Fitness:} discounted squared forecast errors on inflation
+          history (decay $\rho$).
+    \item \textbf{Tournament:} agents paired; both copy the more accurate
+          intercept.
+  \end{enumerate}
+  \vspace{0.4em}
+  Aggregate update $\phi_t=\phi_{t-1}+S(\cdot)$ with $S$ nonlinear
+  (no closed form for $S$). Authors solve it with the GSV Dynare SL
+  toolbox; this repo's \texttt{social\_learning.py} implements the
+  three micro steps on a finite $J$.
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Shocks and estimation (paper)}
+  \begin{itemize}
+    \item Demand: $g_t=\rho_g g_{t-1}+\varepsilon_t^g-\mu_g\varepsilon_{t-1}^g$.
+    \item Cost-push: $u_t=\rho_u u_{t-1}+\varepsilon_t^u-\mu_u\varepsilon_{t-1}^u$.
+    \item Monetary: $v_t=\varepsilon_t^v$.
+    \item SL news: aggregate $\lambda_t$, idiosyncratic $\iota_{j,t}$.
+    \item Bayesian estimation with an inversion filter
+          (Cuba-Borda, Guerrieri, Iacoviello and Zhong 2019) on
+          \textbf{1985Q1--2023Q4} U.S.\ macros \emph{and} SPF inflation
+          forecasts (WP \S3). $\beta=0.99$ calibrated.
+  \end{itemize}
+  \vspace{0.3em}
+  {\footnotesize
+  \begin{tabular}{@{}lrlr@{}}
+    \toprule
+    Param. & Table 1 mean & Param. & Table 1 mean \\
+    \midrule
+    $\kappa$ & 0.2032 & $\rho_\iota$ & 0.8179 \\
+    $\sigma$ & 1.6993 & $\rho_u,\mu_u$ & 0.6328, 0.4887 \\
+    $\phi_\pi$ & 1.7131 & $\mu$ (news) & 0.4357 \\
+    $\phi_y$ & 0.1564 & $\rho$ (fitness) & 0.7745 \\
+    \bottomrule
+  \end{tabular}
+  }\\[0.4em]
+  {\scriptsize Use Table 1 posterior means (not the WP narrative aside
+  $\phi_\pi\approx 1.82$). Estimation itself is \textbf{not} in this repo.}
+\end{frame}
+
+%======================================================================
+\section{Contributions}
+%----------------------------------------------------------------------
+\begin{frame}{What the Tinbergen / JME paper adds}
+  Relative to FIRE NK and to the inflation-scare literature:
+  \begin{itemize}
+    \item A \textbf{micro-founded SL} layer that can \emph{generate}
+          inflation scares: heterogeneous long-run intercepts, time-varying
+          dispersion, possible unanchoring from target.
+    \item A \textbf{closed-form} representation that keeps the full
+          cross-section of beliefs, then Bayesian estimation on macros+SPF.
+    \item Quantitative claim: \textbf{timing} of tightening dominates
+          delayed \textbf{strength} for containing the scare (conditional
+          on policy not being too weak).
+    \item Historical narrative (WP \S4): the Fed was behind the curve in
+          2021; earlier tightening could have cut the inflation peak
+          without a recession; further delay risks entrenchment and
+          larger output losses.
+    \item Soft landing as successful (if late) scare management under
+          HENK---not as FIRE-only mean reversion.
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{What this open-source prototype adds}
+  Honest split vs.\ the published paper:
+  \begin{itemize}
+    \item \textbf{Runnable Python} FIRE nesting, finite-$J$ SL micro block,
+          coupled HENK IRFs, and illustrative timing-vs-strength
+          counterfactuals---no Matlab required.
+    \item \textbf{Dynare scaffold} for the linear NK+ARMA block, aimed at
+          the GSV SL toolbox once \texttt{TOOLBOX\_PATH} is set.
+    \item Transparent, documented approximations (quasi-RE observer,
+          martingale $\phi$, provisional $C,D,G$ loadings).
+    \item \textbf{Does not} reproduce author Table~3 historical-shock
+          paths, inversion-filter estimation, or SPF measurement equations.
+    \item No official replication package for the paper was found
+          (GitHub / journal supplement / author download).
+  \end{itemize}
+  \vfill
+  {\small This talk is a map of the \emph{paper} plus a status report on
+  the \emph{repo}---two different objects.}
+\end{frame}
+
+%======================================================================
+\section{Results and discussion}
+%----------------------------------------------------------------------
+\begin{frame}{Prototype IRF: cost-push, FIRE vs.\ SL}
+  \begin{center}
+    \includegraphics[width=\textwidth,height=0.68\textheight,keepaspectratio]%
+      {irf_costpush_fire_vs_sl.png}
+  \end{center}
+  {\scriptsize Python HENK prototype; unit cost-push impulse; Table~1
+  params; seed $=1$, $J=100$, ARMA(1,1) on; horizon 40.
+  \textbf{[PROVISIONAL]} not the authors' Dynare-toolbox IRFs.}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Reading the cost-push IRF}
+  Qualitative pattern in \texttt{output/fire\_vs\_sl\_summary.txt}
+  (and the figure):
+  \begin{itemize}
+    \item \textbf{FIRE} ($\phi\equiv 0$): inflation jumps on impact
+          (unit shock: $\pi_0\approx 1.39$) then mean-reverts quickly---
+          even slightly undershoots. Temporary cost-push, as in a
+          standard 3-eq NK.
+    \item \textbf{SL}: impact almost identical (beliefs have not had
+          time to move). Thereafter $\phi_t$ drifts away from 0 and
+          inflation stays \emph{higher for longer} (turns positive again
+          while FIRE is still decaying).
+    \item Mechanism: the wedge $\phi_t$ feeds the NKPC and the IS real
+          rate; dispersed long-run beliefs amplify and persist the scare.
+    \item Same structural parameters in both regimes---the extra
+          persistence is \emph{not} a more persistent $u_t$.
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Timing vs.\ strength (prototype only)}
+  Shared 12-quarter cost-push surge ($0.01$ innovations), identical SL
+  seed, delay $=8$ quarters
+  (\texttt{timing\_counterfactual.py}; NOTES.md STATUS):
+  \begin{center}
+  {\footnotesize
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+    Scenario & peak $\pi$ & min $y$ & $\max|\phi|$ \\
+    \midrule
+    Baseline (Table 1) & 0.093 & $-0.169$ & 0.037 \\
+    Earlier ($\phi_\pi{+}10\%$, $\rho_\iota\times 0.9$ from $t=0$)
+      & 0.068 & $-0.158$ & 0.034 \\
+    Stronger delayed ($\phi_\pi{+}10\%$ from $t=8$)
+      & 0.075 & $-0.171$ & 0.037 \\
+    \bottomrule
+  \end{tabular}
+  }
+  \end{center}
+  \begin{itemize}
+    \item Pattern is \emph{consistent with} WP \S4: earlier tightening
+          beats delayed strength for peak inflation / scare containment.
+    \item \textbf{Not} a claim of matching author Table~3 or estimated
+          historical shocks. Peaks occur at the horizon end; with a
+          well-specified PLM, $\phi$ paths can be news-dominated.
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Why this matters for 2021--22}
+  \begin{itemize}
+    \item \textbf{Post-COVID surge.}
+          A sequence of cost-push / relative-price shocks plus delayed
+          liftoff is exactly the environment in which an inflation scare
+          can develop if long-run beliefs are heterogeneous.
+    \item \textbf{Anchoring is an object.}
+          Under FIRE, ``transitory'' is almost automatic. Under SL,
+          anchoring is a \emph{distribution} that policy timing can
+          protect or lose.
+    \item \textbf{Fed timing.}
+          Paper: earlier 2021 tightening could have reduced the inflation
+          peak without a recession; further delay would have unanchored
+          expectations and raised output losses. Soft landing $\approx$
+          containing the scare late rather than never.
+    \item \textbf{Communication} (companion JMCB idea): talking the
+          target into the tournament is a potential substitute for
+          earlier hikes---not coded here.
+  \end{itemize}
+\end{frame}
+
+%======================================================================
+\section{What the replicated model achieves}
+%----------------------------------------------------------------------
+\begin{frame}{Runnable artefacts}
+  \begin{itemize}
+    \item \texttt{src/re\_nk\_irf.py} --- FIRE / RE 3-eq monetary IRFs;
+          $\phi_t=0$; Table~1 params. Nested by the HENK simulator.
+    \item \texttt{src/social\_learning.py} --- finite-$J$ news, fitness,
+          tournament (WP eqs.\ 10--12).
+    \item \texttt{src/henk\_sim.py} --- FIRE vs.\ SL IRFs with ARMA(1,1)
+          $u,g$ and richer PLM common forecast
+          $\to$ \texttt{output/irf\_*\_\{fire,sl,sl\_minus\_fire\}.csv}.
+    \item \texttt{src/timing\_counterfactual.py} --- baseline / earlier /
+          stronger-delayed under a shared surge
+          $\to$ \texttt{output/counterfactuals/}.
+    \item \texttt{src/plot\_costpush\_irf.py} --- figure on the previous
+          IRF slide.
+  \end{itemize}
+  FIRE paths nest \texttt{re\_nk\_irf} on the monetary $A,B$ block.
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Calibration, Dynare scaffold, caveats}
+  \begin{itemize}
+    \item \textbf{Calibration:} Tinbergen Table~1 posterior means
+          ($\kappa,\sigma,\phi_\pi,\phi_y,\rho_\iota$, ARMA, SL news/fitness)
+          plus $\beta=0.99$. Shock stds live in the Dynare \texttt{.mod};
+          Python IRFs default to \emph{unit} impulses.
+    \item \textbf{Dynare:} \texttt{dynare/bullard\_henk.mod} is the
+          FIRE/RE nesting of WP (1)--(3). Driver
+          \texttt{run\_bullard\_henk.m} calls \texttt{SL\_get\_pq} then
+          \texttt{SL\_chain} \emph{after} you set \texttt{TOOLBOX\_PATH}
+          to the unzipped Mendeley \texttt{V3/Toolbox}.
+    \item \textbf{Not yet aligned:} Python $C,D,G$ loadings vs.\ toolbox
+          $P,\widetilde Q,R$; inflation-only SL via
+          \texttt{mut\_sd}$_y=0$ is provisional; no separate $\lambda$
+          shock in toolbox options.
+    \item \textbf{Blocked:} inversion-filter estimation, SPF observables,
+          author Table~3, official replication files.
+  \end{itemize}
+\end{frame}
+
+%======================================================================
+\section{Simplifying assumptions}
+%----------------------------------------------------------------------
+\begin{frame}{What is on, what is shut off}
+  \textbf{In the paper's baseline HENK (and this prototype):}
+  \begin{itemize}
+    \item 3-equation NK block (no capital, no HANK, no open economy).
+    \item Heterogeneity \emph{only} in long-run inflation intercepts;
+          output-gap expectations remain RE / model-consistent.
+    \item Steady-state learning around a zero-deviation SS; hats vs.\
+          target.
+    \item Quasi-RE observer: each period SL sets $\phi_t$ from \emph{past}
+          inflation, then the linear macro block takes $\phi_t$ as given
+          (martingale $\mathbb{E}\phi'=\phi$). Not a simultaneous
+          nonlinear RE+SL fixed point.
+  \end{itemize}
+  \textbf{Shut off / not in the prototype:}
+  \begin{itemize}
+    \item Own-cost-belief NKPC extensions; Rotemberg microfoundations
+          of $\kappa$ (App.~B); MA lag in MSV loadings (paths are ARMA,
+          loadings still AR(1) expectations).
+    \item Delayed-strength loadings switch without agents anticipating
+          the future rule.
+  \end{itemize}
+\end{frame}
+
+%======================================================================
+\section{Extensions}
+%----------------------------------------------------------------------
+\begin{frame}{Future developments that fit this codebase}
+  \begin{enumerate}
+    \item \textbf{Dynare SL alignment.}
+          Install GSV toolbox; set \texttt{TOOLBOX\_PATH}; cross-check
+          Python $C,D,G$ against \texttt{mo.PP/QQ/RR}; optional MA state
+          in loadings.
+    \item \textbf{Phillips-block extensions.}
+          Own-cost-belief NKPC; App.~B Rotemberg $\leftrightarrow\kappa$.
+    \item \textbf{Estimation stack} (blocked on data/codes).
+          Inversion filter, SPF measurement (WP \S3.1 / App.~A),
+          historical-shock Table~3.
+    \item \textbf{Companions in the literature queue.}
+          Experience-based anchoring; finite planning horizons;
+          CB communication in the tournament (Arifovic et al.);
+          UK/BoE timing analogue (NOTES.md).
+    \item \textbf{Later synthesis} (not this repo): HENK beliefs + HANK
+          fiscal non-Ricardians for a fuller post-COVID accounting.
+  \end{enumerate}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Takeaways}
+  \begin{itemize}
+    \item Inflation scares are a \emph{distributional} object: dispersed
+          long-run inflation beliefs can persist after the cost-push dies.
+    \item FIRE NK is nested ($\phi=0$) and looks transitory; SL adds
+          persistence through $\phi_t$.
+    \item The paper's policy punchline is \textbf{timing over delayed
+          strength}. The Python prototype is qualitatively consistent,
+          not a numerical replica of Table~3.
+    \item This repo is a transparent stepping stone: FIRE+SL IRFs,
+          a Dynare scaffold, and documented gaps
+          (toolbox, estimation, author codes).
+  \end{itemize}
+  \vfill
+  {\scriptsize
+  \textbf{Selected references.}
+  Bullard, Grimaud, Salle and Vermandel (2025), Tinbergen DP 2025-001 /
+  JME (2026);
+  Goodfriend (1993);
+  Grimaud, Salle and Vermandel (2025), JEDC;
+  Evans and Honkapohja (2001);
+  Cuba-Borda et al.\ (2019);
+  Arifovic, Grimaud, Salle and Vermandel (\emph{JMCB}).
+  Compile: \texttt{pdflatex henk\_seminar.tex} from
+  \texttt{bullard-soft-landing/beamer/}.}
+\end{frame}
+
+\end{document}
