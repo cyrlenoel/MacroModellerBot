@@ -5,4 +5,15 @@ venv/
 .env
 .DS_Store
 *.pdf
+!beamer/dbr_seminar.pdf
 .ipynb_checkpoints/
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.vrb
