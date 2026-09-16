@@ -56,7 +56,7 @@ Shock ARMA coefficients (`rho_u`, `mu_u`, `rho_g`, `mu_g`, …) are listed in NO
 
 Equation checklist: `src/henk_equation_skeleton.md`.
 
-Seminar slides: `beamer/henk_seminar.tex` (compile with `pdflatex henk_seminar.tex` or `latexmk -pdf henk_seminar.tex` from `beamer/`).
+Seminar slides: `beamer/henk_seminar.tex` (compile with `pdflatex henk_seminar.tex` or `latexmk -pdf henk_seminar.tex` from `beamer/`). Compiled review copy: `beamer/henk_seminar.pdf`.
 
 ## Recommended next step
 
@@ -72,7 +72,7 @@ bullard-soft-landing/
   README.md
   requirements.txt
   papers/          # Tinbergen WP PDF + text extract
-  beamer/          # academic seminar slides (henk_seminar.tex)
+  beamer/          # academic seminar slides (henk_seminar.tex + henk_seminar.pdf)
   src/
     re_nk_irf.py
     social_learning.py

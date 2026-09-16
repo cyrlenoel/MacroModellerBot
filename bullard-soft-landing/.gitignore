@@ -6,6 +6,7 @@ venv/
 .DS_Store
 papers/
 *.pdf
+!beamer/henk_seminar.pdf
 *.aux
 *.log
 *.nav
