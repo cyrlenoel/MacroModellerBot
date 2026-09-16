@@ -64,64 +64,70 @@
 \begin{frame}{Why fiscal non-tradables?}
   \begin{block}{Core question \paper}
     Government spending falls disproportionately on \emph{non-tradable services}.
-    Empirically, a spending shock still raises private consumption, raises goods
-    \emph{and} services output, \emph{lowers} the relative price of goods, and
-    \emph{worsens} net exports.
+    Empirically, a spending shock still raises private consumption (goods more
+    than services), raises goods \emph{and} services output, \emph{lowers} the
+    relative price of goods, and \emph{worsens} net exports.
   \end{block}
   \begin{itemize}
-    \item A two-sector open RANK with the same $G$ bias does \emph{not} deliver
-          those co-movements---especially when $G$ is purely non-tradable.
+    \item Nested two-sector open RANK with the same $G$ bias does \emph{not}
+          deliver that package: $C$ falls, and when $G$ is purely NT the
+          goods-output co-movement disappears.
     \item The paper asks whether \textbf{household heterogeneity} plus
           \textbf{trade openness} can generate the consumption-led spillover
           from fiscal non-tradables into the goods sector.
-    \item That is a statement about \textbf{sectoral fiscal multipliers} in an
-          open economy, not about a one-sector closed-economy multiplier.
+    \item Object: \textbf{sectoral fiscal multipliers} in an open economy---not
+          a one-sector closed-economy multiplier, and not transfers/FTPL.
   \end{itemize}
 \end{frame}
 
 %----------------------------------------------------------------------
-\begin{frame}{Open-economy HANK, fiscal--monetary, T vs.\ NT}
+\begin{frame}{Sectoral fiscal puzzles: RANK, TANK, open HANK}
   \begin{itemize}
-    \item \textbf{Fiscal HANK.}
-          Incomplete markets and high iMPCs reverse RANK crowding-out of $C$
-          (Kaplan, Moll and Violante 2018; Auclert, Rognlie and Straub on the
-          intertemporal Keynesian cross and iMPCs). Sticky information
-          (Auclert, Rognlie and Straub 2020) turns jumps into humps---used
-          here with $\vartheta=0.935$.
-    \item \textbf{Open-economy HANK.}
-          Heterogeneous agents change exchange-rate and trade transmission
-          (Auclert, Rognlie, Souchier and Straub; de Ferra, Mitman and Romei).
-          Fiscal leakage through imports is no longer a representative-agent
-          Euler residual.
-    \item \textbf{Sectoral T / NT.}
-          Distribution costs (Corsetti and Dedola 2005) and imperfect labour
-          mobility (Horvath) break wage pass-through from NT into tradable
-          prices. Composition of $G$ then matters for relative prices.
-    \item \textbf{This talk.}
-          Paper first (S-BVAR facts, two-sector open HANK, claims), then an
-          honest status report on the open-source Figure~3 prototype---not
-          the authors' files.
+    \item \textbf{Open RANK, sectoral.}
+          Monacelli and Perotti (2008, 2010): $C$ falls in both sectors;
+          when $G$ is services-intensive, $Y_T$ contracts (negative output
+          co-movement). Openness can help relative prices, not that package.
+          This paper adds NX and a pre-COVID sample.
+    \item \textbf{Fiscal HANK / IKC.}
+          High iMPCs reverse RANK crowding-out of $C$ (Gal\'i,
+          L\'opez-Salido and Vall\'es 2007 TANK; Auclert, Rognlie and
+          Straub 2024 IKC---the household block here). Sticky information
+          (Auclert, Rognlie and Straub 2020; $\vartheta=0.935$) for humps;
+          signs survive under RE.
+    \item \textbf{Open fiscal HANK, one sector.}
+          Druedahl et al.\ (2024): import leakage offsets part of the HANK
+          multiplier. Aggarwal, Auclert, Rognlie and Straub (2023): high
+          iMPCs $\Rightarrow$ persistent CA deficits. Missing piece: T/NT
+          relative prices.
+    \item \textbf{T / NT structure.}
+          Cardi, Restout and Claeys (2020): imperfect labour mobility after
+          NT-biased $G$. Corsetti and Dedola (2005): distribution costs in
+          retail tradable prices. Composition of $G$ then matters.
   \end{itemize}
+  {\scriptsize Contrast, not synthesis: Kaplan--Miyahara (NBER WP 35400) and
+  Angeletos, Lian, Wolf and Zhang (NBER WP 35642) are HANK \emph{monetary--fiscal
+  / transfer} papers. This talk is NT-biased $G$ and sectoral multipliers.}
 \end{frame}
 
 %----------------------------------------------------------------------
 \begin{frame}{RANK vs.\ HANK fiscal transmission}
   \begin{itemize}
     \item \textbf{RANK.}
-          Ricardian households. A financed rise in $G$ raises the present
-          value of taxes and typically \emph{crowds out} private consumption.
-          In an open RANK, expenditure switching and import leakage can move
-          NX, but the consumption-led spillover to tradables is missing when
-          $G$ itself has little tradable content.
+          Ricardian Euler. Deficit-financed $G$ raises expected real rates
+          \emph{and} the PV of taxes, so $C$ falls in both sectors
+          (Monacelli--Perotti). $Y_T>0$ then rides on the tradable content
+          of $G$; with $\phi_{GT}=0$, that co-movement vanishes. NX barely
+          moves.
     \item \textbf{HANK.}
-          Uninsurable income risk and a borrowing constraint $a\ge 0$ produce
-          a mass of high-iMPC households. Labour income from NT production
-          raises $C$ on impact; CES demand then spills into goods.
+          Uninsurable income risk and $a\ge 0$ produce high iMPCs and
+          precautionary saving. NT-biased $G$ raises labour income; constrained
+          households spend it, and CES demand spills into goods---even if
+          $\phi_{GT}=0$.
     \item \textbf{Openness is not a sideshow.}
-          Import intensity and limited labour reallocation dampen wage
-          pass-through to tradable prices. Relative goods prices can
-          \emph{fall} even as $Y_T$ rises; NX can deteriorate while $Y_T$
-          still co-moves positively (expenditure switching).
+          Import intensity plus imperfect labour reallocation dampen wage
+          pass-through to tradable prices. $P_T/P_{NT}$ can \emph{fall} as
+          $Y_T$ rises; NX can deteriorate while expenditure switching still
+          supports $Y_T$.
     \item \textbf{Paper's identification of the mechanism.}
           Nested RANK vs.\ HANK, and a $\phi_{GT}=0$ (pure NT) counterfactual:
           HANK keeps $Y_T>0$; RANK does not.
@@ -130,17 +136,19 @@
 
 %----------------------------------------------------------------------
 \begin{frame}{Four stylised facts (S-BVAR)}
-  Empirical block (WP \S2): Blanchard--Perotti identification, U.S.\
-  1954Q1--2019Q4, nine variables, four lags, NIW prior.
+  Empirical block (WP \S2): Blanchard--Perotti, $G$ ordered first (Cholesky),
+  U.S.\ 1954Q1--2019Q4, nine variables, four lags, NIW prior.
   Shock: orthogonal \textbf{1\% of output} increase in $G$.
   \begin{enumerate}
-    \item Private consumption \textbf{rises} (crowding-in, not RANK crowding-out).
-    \item Output rises in \textbf{goods and services}.
+    \item Private consumption \textbf{rises} (crowding-in), with
+          $C_T$ \textbf{larger} than $C_{NT}$.
+    \item Output rises in \textbf{goods and services} (despite NT-biased $G$).
     \item The relative price of goods \textbf{falls}.
     \item Net exports \textbf{deteriorate}.
   \end{enumerate}
-  \vspace{0.4em}
+  \vspace{0.35em}
   {\footnotesize
+  Ramey-style military narrative is a poor proxy here (more tradable; anticipation).
   The theoretical $G$ path is the empirical IRF (``does not follow a hump-shaped
   path'', \S4.3). This repo uses a 20-quarter path digitised from Figure~3's
   $G$ panel \textbf{[PROVISIONAL]}, not the authors' series.}
@@ -154,13 +162,14 @@
     \item Domestic production: \textbf{tradables} ($T$, goods) and
           \textbf{non-tradables} ($NT$, services). Linear technology
           $Y_S=N_S$; flexible goods prices, sticky wages only (baseline).
-    \item Incomplete-markets households; hours set by sectoral unions
-          ($n_{S,t}(i)=N_{S,t}$). Nested RANK counterpart: same aggregates,
-          Euler instead of the HA Jacobian.
+    \item Incomplete-markets households (Auclert--Rognlie--Straub 2024);
+          hours set by sectoral unions ($n_{S,t}(i)=N_{S,t}$). Nested RANK:
+          same aggregates, Euler instead of the HA Jacobian.
     \item Fiscal $G$ is CES-split with $\phi_{GT}=0.25$ (OECD COFOG tradable
           content); HA-LB / RA-LB set $\phi_{GT}=0$.
-    \item Small open economy: CES home/foreign, Corsetti--Dedola distribution,
-          UIP with an NFA wedge, tax rule on debt, Taylor rule on CPI.
+    \item Open-economy \emph{block} with foreign variables at SS, calibrated
+          to the U.S.\ (12\% import/GDP): CES home/foreign, Corsetti--Dedola
+          distribution, UIP with an NFA wedge, tax rule on debt, Taylor on CPI.
     \item Solution: perfect-foresight MIT shocks, sequence-space Jacobians,
           linearised (Auclert, Bard\'oczy, Rognlie and Straub 2021).
   \end{itemize}
@@ -175,12 +184,15 @@
             z_t(i)=(w_T N_T+w_{NT}N_{NT}-T_t)\,e_t(i).
           \]
     \item Utility (4) with $\sigma=\varphi=1$. Households choose $c,a$ only;
-          hours are union-set.
-    \item CES demands: $T$ vs.\ $NT$ ($\lambda_t=2.15$, $\phi_t=0.623$);
+          hours are union-set. Taxes scale with $e$, so the $G$ shock does
+          not reshape the income \emph{distribution}.
+    \item CES demands: $T$ vs.\ $NT$ ($\lambda_t=2.15$, $\phi_t=0.623$,
+          including a distribution-margin reclassification);
           home vs.\ foreign with trade elasticity $\lambda_d=1$
           (Cobb--Douglas; 12\% import/GDP via $\phi_d=0.57$).
     \item Sticky expectations, share $\vartheta=0.935$ that does not update
-          (paper eq.\ 13 / Auclert--Rognlie--Straub mapping).
+          (paper eq.\ 13 / Auclert--Rognlie--Straub mapping). Used for
+          \emph{humps}; qualitative signs are not tied to it.
     \item Nested RANK: same budget, representative Euler, same $r$
           ($\beta_{RA}=0.995$ vs.\ $\beta_{HA}=0.986$).
   \end{itemize}
@@ -190,21 +202,20 @@
 \begin{frame}{Production, labour, distribution}
   \begin{itemize}
     \item Flexible prices: $P_Z=W_S$ (eq.\ 14). Sticky-price Appendix~C is
-          not in the baseline DAG.
-    \item Imperfect labour mobility: Horvath aggregator (9), $\lambda_l=1$.
-          Sectoral wage Phillips curves (12), slope $\kappa_w=0.0044$
-          (Lind\'e et al.\ 2016), $\theta_w=3$ (50\% markup).
+          not in the baseline DAG (avoids countercyclical profits).
+    \item Imperfect labour mobility: Horvath aggregator (9),
+          $\lambda_{\ell}=1$. Sectoral wage Phillips curves (12), slope
+          $\kappa_w=0.0044$ (Lind\'e et al.\ 2016), $\theta_w=3$ (50\% markup).
+    \item Two reasons $P_T/P_{NT}$ falls: (i)~the foreign component of
+          tradable prices; (ii)~NT-biased $G$ plus limited reallocation, so
+          NT wages rise more.
     \item Distribution (Corsetti--Dedola, eqs.\ 28--31): local NT services
-          are bundled into retail prices of domestic and imported tradables
-          ($\mu_d=0.266$, $\mu_f=0.754$). That is the sectoral \emph{cost}
-          channel from NT wages into $T$ prices.
+          enter retail prices of domestic and imported tradables
+          ($\mu_d=0.266$, $\mu_f=0.754$). Import NT content $\approx 2\times$
+          domestic, which \emph{cushions} NX after appreciation.
     \item Output identities (34)--(35): $Y_T$ is domestic tradables plus
           exports; $Y_{NT}$ is services plus distribution margins.
   \end{itemize}
-  \vfill
-  {\scriptsize Seminar reading: limited labour reallocation plus distribution
-  costs let NT demand raise $Y_{NT}$ without immediately bidding up goods
-  prices one-for-one---the relative $T/NT$ price can fall.}
 \end{frame}
 
 %----------------------------------------------------------------------
@@ -217,10 +228,11 @@
   \end{align}
   \begin{itemize}
     \item $G$ exogenous; CES split (16)--(19) with $\phi_{GT}=0.25$,
-          $\phi^G_d=1$. Budget (20). $\kappa_b=0.027$, $\zeta=0.9$,
-          $\kappa_\pi=1.5$.
+          $\phi^G_d=1$ (no public import leakage in baseline).
+          Budget (20). $\kappa_b=0.027$, $\zeta=0.9$, $\kappa_\pi=1.5$.
     \item Mutual fund / UIP (23)--(26). Paper:
-          $\Gamma_t=\exp(-10^{-9}\,\mathrm{nfa}_t)$.
+          $\Gamma_t=\exp(-10^{-9}\,\mathrm{nfa}_t)$
+          (Schmitt-Groh\'e--Uribe NFA closer).
     \item Exports $X_t=C^\ast_{F,t}/(1+\mu_f)$; imports through the
           distribution wedge. Goods/asset clearing (36)--(37).
     \item SSJ DAG: unknowns $(Y_T,Y_{NT},w_T,w_{NT},\pi,Q,i,B,\mathrm{nfa})$;
@@ -241,7 +253,7 @@
     $\theta_w$, $\kappa_w$ & 3, 0.0044 & $\phi_d$, $\lambda_d$ & 0.57, 1 \\
     $\sigma$, $\varphi$ & 1, 1 & $\mu_f$, $\mu_d$ & 0.754, 0.266 \\
     $\rho_e$, $\vartheta$ & 0.968, 0.935 & $\zeta$, $\kappa_\pi$ & 0.9, 1.5 \\
-    $\phi_{GT}$, $\kappa_b$ & 0.25, 0.027 & $\phi^G_d$ & 1 \\
+    $\phi_{GT}$, $\kappa_b$ & 0.25, 0.027 & $\lambda_{\ell}$, $\phi^G_d$ & 1, 1 \\
     \bottomrule
   \end{tabular}
   }
@@ -251,7 +263,7 @@
     \item All of the above are \textbf{[VERIFIED]} in \texttt{TABLE2}.
     \item \textbf{[PROVISIONAL]} (NOTES.md; later slide): $\sigma_e=0.35$
           rather than Table~2's $0.58$; $\psi_{\mathrm{nfa}}=10^{-3}$ rather
-          than $10^{-9}$; $G/Y$ and $\phi_l$ implied by adding-up.
+          than $10^{-9}$; $G/Y$ and $\phi_{\ell}$ implied by adding-up.
     \item Estimation of the S-BVAR itself is \textbf{not} in this repo.
   \end{itemize}
 \end{frame}
@@ -262,20 +274,21 @@
 \begin{frame}{What the NBB WP adds}
   Relative to one-sector HANK and to open-economy RANK fiscal:
   \begin{itemize}
-    \item An \textbf{empirical} four-fact package: crowding-in of $C$,
-          positive goods \emph{and} services output, a decline in the
-          relative goods price, and a deterioration of NX after a $G$ shock
-          that is concentrated in NT services.
-    \item A \textbf{two-sector open HANK} in which uninsurable income risk
-          and precautionary saving produce a persistent income-driven
-          expansion in $C$; import intensity and limited labour reallocation
-          dampen wage pass-through to goods prices.
+    \item An \textbf{empirical} four-fact package, including NX and a
+          $C_T>C_{NT}$ split, for a $G$ shock concentrated in NT services
+          (S-BVAR through 2019Q4).
+    \item A \textbf{two-sector open HANK}: uninsurable income risk and
+          precautionary saving produce a persistent income-driven expansion
+          in $C$; import intensity and limited labour reallocation dampen
+          wage pass-through to goods prices.
     \item \textbf{Expenditure switching} then yields $Y_T>0$ even as NX
           worsens---and even when $\phi_{GT}=0$. Nested RANK fails that
-          test.
+          test. TANK (App.~B) can raise $C$ on impact but lacks the
+          precautionary hump.
     \item Quantitative message: \textbf{household heterogeneity and trade
           openness jointly} shape sectoral fiscal multipliers. Composition
-          of $G$ is not a sideshow.
+          of $G$ is not a sideshow; more open economies leak more of $Y_T$
+          (App.~D).
   \end{itemize}
 \end{frame}
 
@@ -292,8 +305,8 @@
           DAG (next slides): $\sigma_e$, UIP wedge, digitised $G$ / S-BVAR,
           foreign export demand, distribution on $G_D$.
     \item \textbf{Does not} reproduce author IRF numbers, S-BVAR 68\% bands,
-          Figure~4 international panel (as the main artefact), or
-          Appendices~B--D. No official replication package / S-BVAR data
+          Figure~4 international panel (as the main artefact), TANK App.~B,
+          or Appendices~C--D. No official replication package / S-BVAR data
           were found.
   \end{itemize}
 \end{frame}
@@ -315,7 +328,7 @@
 %----------------------------------------------------------------------
 \begin{frame}{Qualitative co-movements (this code)}
   Signs from \texttt{output/figure3\_summary.txt} (near-term averages),
-  matching the paper's main message---\emph{not} author magnitudes:
+  matching the paper's main \emph{message}---not author magnitudes:
   \begin{center}
   {\footnotesize
   \begin{tabular}{@{}lcccc@{}}
@@ -335,6 +348,8 @@
   \begin{itemize}
     \item Heterogeneity delivers the consumption-led spillover to tradables;
           RANK does not, especially when $G$ is purely non-tradable.
+    \item RA still has $Y_T>0$ at $\phi_{GT}=0.25$: that is $G$'s tradable
+          content, not crowding-in of $C$.
   \end{itemize}
 \end{frame}
 
@@ -348,9 +363,9 @@
           Openness: NX deteriorates while expenditure switching supports
           $Y_T$.
     \item \textbf{RANK contrast.}
-          $C$ falls. With $\phi_{GT}=0.25$, $Y_T$ can still rise from the
-          tradable content of $G$; with $\phi_{GT}=0$, that co-movement
-          disappears.
+          $C$ falls (higher $r$ and future taxes). With $\phi_{GT}=0.25$,
+          $Y_T$ can still rise from the tradable content of $G$; with
+          $\phi_{GT}=0$, that co-movement disappears.
     \item \textbf{Known shape gaps vs.\ the published figure}
           (NOTES.md; this code):
           HA $C$ is a bit too front-loaded (sticky-info hump milder);
@@ -365,23 +380,23 @@
 \begin{frame}{Why this matters for recent fiscal / open-economy debates}
   \begin{itemize}
     \item \textbf{Composition of $G$.}
-          Much public spending is services (health, education,
-          administration). Multipliers quoted on aggregate $G$ hide a
-          T / NT split; the paper's $\phi_{GT}=0.25$ is the empirically
-          relevant bias, not a knife-edge.
+          Health, education, administration are services. Multipliers quoted
+          on aggregate $G$ hide a T/NT split; $\phi_{GT}=0.25$ is the
+          empirically relevant bias, not a knife-edge.
     \item \textbf{Crowding-in vs.\ crowding-out.}
-          Post-COVID fiscal packages revived the RANK prediction that $C$
-          should fall. The S-BVAR sample here ends in 2019Q4; the
-          \emph{mechanism}---high iMPCs plus NT-biased $G$---is the relevant
-          object for those debates, not a COVID-period estimate.
+          The S-BVAR sample ends in 2019Q4. The \emph{mechanism}---high
+          iMPCs plus NT-biased $G$---is what travels to later packages, not
+          a COVID-period estimate. Kaplan--Miyahara / Angeletos et al.\ speak
+          to transfers and monetary--fiscal inflation; different object.
     \item \textbf{Openness and leakage.}
-          Import intensity need not kill the goods-sector multiplier:
-          expenditure switching can raise $Y_T$ even as NX worsens.
-          Closed-economy HANK misses that joint restriction.
+          At U.S.\ import intensity, expenditure switching can raise $Y_T$
+          even as NX worsens. Appendix~D: a \emph{more} open economy leaks
+          more of that goods-sector gain. Closed-economy HANK misses the
+          joint restriction.
     \item \textbf{Relative prices.}
-          A fiscal expansion that is NT-heavy can \emph{lower} goods prices
-          relative to services---a sectoral relative-price fact, not a
-          one-sector inflation multiplier.
+          NT-heavy $G$ can \emph{lower} goods prices relative to
+          services---a sectoral relative-price fact, not a one-sector
+          inflation multiplier.
   \end{itemize}
 \end{frame}
 
@@ -389,7 +404,7 @@
 \section{What the repo prototype achieves}
 %----------------------------------------------------------------------
 \begin{frame}[fragile]{Runnable artefacts}
-  \textbf{Runs today} (Python + sequence-jacobian; Table~2 params unless noted):
+  \textbf{Runs today} (Python + sequence-jacobian 1.0.0; Table~2 params unless noted):
   \begin{itemize}
     \item Two-sector open HANK (sticky-info HA) and nested RANK.
     \item $\phi_{GT}=0.25$ baseline and $\phi_{GT}=0$ (LB) variants.
@@ -409,18 +424,19 @@ python3 src/test_qualitative.py
   \texttt{figure3\_summary.txt}.
 
   \textbf{Does not run:} author S-BVAR estimation, exact $G$ vector,
-  Appendix~C sticky prices, Appendix~D 25\% import share.
+  Appendix~B TANK, Appendix~C sticky prices, Appendix~D 25\% import share.
 \end{frame}
 
 %----------------------------------------------------------------------
 \begin{frame}{Calibration knobs and caveats}
   \begin{itemize}
     \item \textbf{$\sigma_e$.}
-          Table~2 lists $0.58$. Used as the SSJ Rouwenhorst unconditional SD
-          of $\log e$, that misses Table~1 ($iMPC_1\approx 0.24$, HtM $\approx 20\%$).
-          Default here: \texttt{-{-}sigma-e 0.35}, which hits Table~1
-          $iMPC_1\approx 0.51$ and HtM $\approx 49.7\%$ given $\beta_{HA}$
-          and $r=1/\beta_{RA}-1$ \textbf{[PROVISIONAL]}.
+          Table~2 lists $0.58$ (Auclert et al.\ 2024 quarterly conversion).
+          As the SSJ Rouwenhorst SD of $\log e$, that undershoots Table~1
+          year-1 iMPC $0.507$ and text HtM $49.7\%$ ($\approx 0.24$ /
+          $\approx 20\%$). Default \texttt{-{-}sigma-e 0.35} gets
+          iMPC$_1\approx 0.53$, HtM $\approx 49.5\%$ given $\beta_{HA}$ and
+          $r=1/\beta_{RA}-1$ \textbf{[PROVISIONAL]}---close, not exact.
     \item \textbf{UIP wedge.}
           Paper $\psi_{\mathrm{nfa}}=10^{-9}$; CLI default
           \texttt{-{-}psi-nfa 1e-3} for a stable linear solve
@@ -428,7 +444,7 @@ python3 src/test_qualitative.py
     \item \textbf{S-BVAR overlay} in \texttt{empirical\_sbvar.py}: hand-read
           from Figure~3, not the authors' series \textbf{[PROVISIONAL]}.
     \item \textbf{Other closures} (NOTES.md): $G/Y\approx 0.214$ implied by
-          12\% import/GDP; $\phi_l$ set to sectoral hours shares so both
+          12\% import/GDP; $\phi_{\ell}$ set to sectoral hours shares so both
           wage PCs hold at $w=1$; distribution margin on $G_D$ for labour
           income $=$ GDP; SOE export demand with $C^\ast$ fixed; SSJ
           ex-post $r=$ lagged ex-ante.
@@ -444,9 +460,9 @@ python3 src/test_qualitative.py
     \item Two domestic sectors only; linear technology; flexible prices /
           sticky wages (not sticky prices).
     \item Hours set by unions; incomplete markets with $a\ge 0$; sticky
-          expectations on the HA Jacobian.
-    \item SOE: foreign variables at SS; Cobb--Douglas trade ($\lambda_d=1$);
-          Horvath $\lambda_l=1$; $\phi_{GT}=0.25$.
+          expectations on the HA Jacobian (signs not tied to it).
+    \item Foreign variables at SS; Cobb--Douglas trade ($\lambda_d=1$);
+          Horvath $\lambda_{\ell}=1$; $\phi_{GT}=0.25$; $\phi^G_d=1$.
   \end{itemize}
   \textbf{Extra prototype approximations (not author codes):}
   \begin{itemize}
@@ -455,8 +471,8 @@ python3 src/test_qualitative.py
           CES / distribution on $G_D$; SSJ $r$ timing.
   \end{itemize}
   \textbf{Shut off in both (baseline script):}
-  Appendix~C sticky prices; Appendix~D 25\% import share; Figure~4
-  international panel as the main artefact; official S-BVAR data.
+  Appendix~B TANK; Appendix~C sticky prices; Appendix~D 25\% import share;
+  Figure~4 international panel as the main artefact; official S-BVAR data.
 \end{frame}
 
 %======================================================================
@@ -474,14 +490,16 @@ python3 src/test_qualitative.py
           blocks. Walras: still drop \emph{exactly one} sectoral goods
           residual.
     \item \textbf{Paper appendices} (DAG is extensible).
-          Sticky prices (App.~C); 25\% import share (App.~D); Figure~4
-          international panel as a first-class artefact.
+          TANK (App.~B); sticky prices (App.~C); 25\% import share (App.~D);
+          Figure~4 international panel as a first-class artefact.
     \item \textbf{Blocked on data/codes.}
           Official replication files, S-BVAR data, exact $G$ IRF vector,
           fully specified foreign block.
-    \item \textbf{Later synthesis} (not this folder): two-sector open HANK
-          fiscal + heterogeneous-expectation NK (the HENK companion in this
-          repo) for a fuller post-COVID accounting.
+    \item \textbf{Later, not this folder.}
+          HA-OLG household block: Bard\'oczy--Shanker--Vel\'asquez-Giraldo
+          (FEDS 2026-046) is the SSJ cookbook---unused here (infinite horizon).
+          Synthesis with the HENK companion: two-sector open HANK fiscal
+          plus heterogeneous-expectation NK.
   \end{enumerate}
 \end{frame}
 
@@ -504,13 +522,13 @@ python3 src/test_qualitative.py
   {\scriptsize
   \textbf{Selected references.}
   de Beauffort and Rannenberg (2026), NBB WP~493;
+  Monacelli and Perotti (2008, 2010);
+  Auclert, Rognlie and Straub (2020, 2024);
   Auclert, Bard\'oczy, Rognlie and Straub (2021);
-  Auclert, Rognlie and Straub (2020);
-  Auclert, Rognlie, Souchier and Straub;
-  Kaplan, Moll and Violante (2018);
-  Corsetti and Dedola (2005);
-  de Ferra, Mitman and Romei.
-  Compile: \texttt{pdflatex dbr\_seminar.tex} from
+  Druedahl et al.\ (2024); Aggarwal et al.\ (2023);
+  Cardi, Restout and Claeys (2020); Corsetti and Dedola (2005);
+  Gal\'i, L\'opez-Salido and Vall\'es (2007).
+  Compile: \texttt{latexmk -pdf dbr\_seminar.tex} from
   \texttt{de-beauffort-rannenberg/beamer/}.}
 \end{frame}
 
