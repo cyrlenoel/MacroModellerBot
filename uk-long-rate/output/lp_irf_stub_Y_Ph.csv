@@ -1,0 +1,18 @@
+# IRF stub only. No UK gilt-surprise file was loaded. Coefficients are NaN on purpose.
+# Proxy (a) = 10y gilt HF change orthogonalised to Bank Rate and the OIS path.
+# Proxy (b) = OIS path / expected Bank Rate factor.
+# Outcomes: y = ONS monthly GDP, ph = UK house price index.
+horizon,beta_y_a,se_y_a,beta_ph_a,se_ph_a,beta_y_b,se_y_b,beta_ph_b,se_ph_b
+0,nan,nan,nan,nan,nan,nan,nan,nan
+1,nan,nan,nan,nan,nan,nan,nan,nan
+2,nan,nan,nan,nan,nan,nan,nan,nan
+3,nan,nan,nan,nan,nan,nan,nan,nan
+4,nan,nan,nan,nan,nan,nan,nan,nan
+5,nan,nan,nan,nan,nan,nan,nan,nan
+6,nan,nan,nan,nan,nan,nan,nan,nan
+7,nan,nan,nan,nan,nan,nan,nan,nan
+8,nan,nan,nan,nan,nan,nan,nan,nan
+9,nan,nan,nan,nan,nan,nan,nan,nan
+10,nan,nan,nan,nan,nan,nan,nan,nan
+11,nan,nan,nan,nan,nan,nan,nan,nan
+12,nan,nan,nan,nan,nan,nan,nan,nan
