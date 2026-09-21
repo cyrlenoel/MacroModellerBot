@@ -1,0 +1,18 @@
+anticipated Bank Rate peg: the Taylor rule is left in place and the monetary residual is set to ε_ster,t = −i_t^TR for the first H quarters, with i_t^path = 0, so i_t = ρ_i i_{t−1} + (1−ρ_i)(φ_π π_t + φ_y Y_t) + ν_t + ε_ster,t = 0; residuals are anticipated (perfect foresight) and the Taylor rule resumes after H
+
+[PASS] long rate +100 bp on impact: R^L impact = 100.000 annualised bp
+[PASS] Bank Rate pegged over H: max |i| over 40q = 4.792e-13 annualised bp
+[PASS] sterilising residual offsets the Taylor rule: max |ε_ster + i^TR| = 3.883e-15 quarterly percent
+[PASS] output falls: Y impact = -0.187%, trough = -0.364% at q9
+[PASS] house prices fall on impact: P^h impact = -1.809%
+[PASS] house-price trough in quarters 4-12: P^h trough = -9.462% at q12
+[PASS] effective coupon refixes at 1/(4D): R^eff_0 / R^L_0 = 0.027473, 1/(4D) = 0.027473
+[PASS] interest burden rises, slower than full refix: IB impact = -0.0930 pp of GDP, peak = 0.3457 at q31, full conventional refix would be 0.7500; R^eff peaks at q29
+[PASS] peak borrower consumption does not exceed savers: peak C^b = -0.3358%, peak C^s = 0.5080%
+[PASS] borrower trough lines up with the mortgage-stock rate: C^b trough at q11 (-1.475%), R^m,stock peak at q13
+
+ALL PASS
+
+Interior residual (first 39 leads): 4.263e-14
+Blanchard-Kahn stable roots: 36 (need 36)
+TP innovation = 0.235633 quarterly percent; news innovation = 1.04652 quarterly percent.
