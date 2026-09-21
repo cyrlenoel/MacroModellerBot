@@ -10,7 +10,7 @@ The system is linear. Quantities ($Y$, $C^s$, $C^b$, $C$, $I$, $Q$, $K$, $H$, $P
 
 They are different shocks.
 
-**(a) Term premium.** $TP_t$ jumps and $R^L$ rises with it. Bank Rate is sterilised for $H = 40$ quarters by an anticipated monetary residual. This is the baseline.
+**(a) Term premium, sterilised only.** $TP_t$ jumps and $R^L$ rises with it. Bank Rate is sterilised for $H = 12$ quarters by an anticipated monetary residual. This is the baseline. `stoch_simul` and `output/irf_tp_unsterilised.csv` are **not** scenario (a): both leave the Taylor rule free.
 
 **(b) Short-rate news.** The news state $\nu_t$ shifts the Taylor rule. Bank Rate is not sterilised. The innovation is scaled so $R^L$ still rises $100$ bp on impact, which makes the Bank Rate path much larger than in (a), because the expectations-hypothesis weight on the current short rate is only $1/(4D)$.
 
@@ -22,17 +22,17 @@ They are different shocks.
 
 Every scenario-(a) figure and CSV carries this device:
 
-> anticipated Bank Rate peg: the Taylor rule is left in place and the monetary residual is set to $\varepsilon^{\mathrm{ster}}_t = -i^{TR}_t$ for the first $H$ quarters, with $i^{\mathrm{path}}_t = 0$, so $i_t = \rho_i i_{t-1} + (1-\rho_i)(\varphi_\pi \pi_t + \varphi_y Y_t) + \nu_t + \varepsilon^{\mathrm{ster}}_t = 0$; residuals are anticipated (perfect foresight) and the Taylor rule resumes after $H$.
+> anticipated Bank Rate peg: the Taylor rule is left in place and the monetary residual is set to $\varepsilon^{\mathrm{ster}}_t = -i^{TR}_t$ for the first $H$ quarters, with $i^{\mathrm{path}}_t = 0$, so $i_t = \rho_i i_{t-1} + (1-\rho_i)(\varphi_\pi \pi_t + \varphi_y Y_t) + \psi_{\mathrm{nfa}} E_t nfa_{t+1} + \nu_t + \varepsilon^{\mathrm{ster}}_t = 0$; residuals are anticipated (perfect foresight) and the Taylor rule resumes after $H$. Scenario (a) is this sterilised path only.
 
 In quarterly-percent units the rule in the model is
 
 $$
-i_t = \rho_i i_{t-1} + (1-\rho_i)\big(\varphi_\pi \pi_t + \tfrac{1}{4}\varphi_y Y_t\big) + \nu_t + \varepsilon^{\mathrm{ster}}_t.
+i_t = \rho_i i_{t-1} + (1-\rho_i)\big(\varphi_\pi \pi_t + \tfrac{1}{4}\varphi_y Y_t\big) + \psi_{\mathrm{nfa}} E_t nfa_{t+1} + \nu_t + \varepsilon^{\mathrm{ster}}_t.
 $$
 
-$\varphi_y = 0.125$ is the annual convention, so the output coefficient in quarterly percent is $\varphi_y/4$. $H = 40$, and the reported IRFs are also 40 quarters, so the plotted Bank Rate path is inside the peg. A permanent peg is not used: it would leave the inflation path undetermined.
+$\varphi_y = 0.125$ is the annual convention, so the output coefficient in quarterly percent is $\varphi_y/4$. $\psi_{\mathrm{nfa}} = 0.08$ `[PROVISIONAL]` is an external-balance term inside $i^{TR}$. It is part of the rule the residual offsets; it is not a second instrument. Default $H = 12$. The reported window is still 40 quarters, so the Taylor rule is back on for the last 28 quarters of the figure. A permanent peg is not used: it would leave the inflation path undetermined.
 
-The same term-premium innovation with $\varepsilon^{\mathrm{ster}} = 0$ is written to `output/irf_tp_unsterilised.csv` so the peg is visible. It is not scenario (a).
+The same term-premium innovation with $\varepsilon^{\mathrm{ster}} = 0$ is written to `output/irf_tp_unsterilised.csv` so the peg is visible. **That file is not scenario (a).** Neither is `stoch_simul`.
 
 ---
 
@@ -115,19 +115,25 @@ $$
 C^b_t = \alpha_y Y_t - \mu_{ds} R^{m,\mathrm{stock}}_t + \mu_{\mathrm{coll}} \lambda_q \big(P^h_t - B^m_{t-1}\big).
 $$
 
-**Saver.** External habit, plus a percent-of-consumption shifter for duration carry, mark-to-market, and domestic coupons net of taxes:
+**Saver.** A level rule, not a forward habit Euler. The Euler
 
 $$
-(1+h_s) C^s_t = h_s C^s_{t-1} + E_t C^s_{t+1} - \frac{1-h_s}{\sigma}\big(i_t - E_t\pi_{t+1}\big) + (1-h_s)\,\mathrm{inc}_t,
+(1+h_s) C^s_t = h_s C^s_{t-1} + E_t C^s_{t+1} - \mathrm{eis}\,(i_t - E_t\pi_{t+1}) + \mathrm{inc}_t
 $$
 
+has roots $1$ and $h_s$ when $\mathrm{inc}$ is shut off. A negative mark-to-market dip is then echoed by a positive tail, and a one-period $\Delta TP$ term books a capital gain as soon as the premium decays. Under the peg the short real rate is not the tightening: $i_t = 0$ while $\pi$ falls, so intertemporal substitution postpones consumption and the near-unit root carries that postponement into a later boom. Coupon income in the same Euler integrates the slow refix of $IB$ into the same boom. That is why the previous calibration had peak $C^s \approx +0.5\%$ on a pure term-premium rise.
+
+The rule in the model holds the level:
+
 $$
-\mathrm{inc}_t = (\mathrm{carry}+\mathrm{mtm})\, TP_t - \mathrm{mtm}\, TP_{t-1} + \mathrm{fisc}\,\big(\theta^{\mathrm{dom}} IB_t - \tau_t\big).
+C^s_t = h_s C^s_{t-1} - \psi^{TP} TP_t - \mathrm{eis}\,(i_t - E_t\pi_{t+1}) + \psi^{y} Y_t + \psi^{IB} IB_t - \psi^{\tau} \tau_t,
 $$
 
-$\mathrm{mtm} < 0$, so a positive term-premium innovation is a capital loss on impact and a carry gain while $TP$ stays high. Putting the carry inside the elasticity of substitution as a rate does not separate $C^s$ from $C^b$: the terminal condition kills a pure rate wedge. The shifter is scaled so a permanent $\mathrm{inc}$ of $x$ percent raises $C^s$ by $x$ percent.
+with $\mathrm{eis} = (1-h_s)/\sigma$. Provisional values: $h_s = 0.40$, $\sigma = 6$ so $\mathrm{eis} = 0.10$, $\psi^{TP} = 2$, $\psi^{y} = 0.10$, $\psi^{IB} = 0.02$, $\psi^{\tau} = 0.12$. $\psi^{TP} > 0$ means a higher term premium is a duration loss and cuts $C^s$. $\psi^{IB}$ is a small coupon pass-through and does not overturn that loss. There is no $\Delta TP$ capital-gain term.
 
-**Housing.** A sticky user-cost / housing Phillips curve, so the house-price trough is not forced onto the impact date the way a pure flexible asset price would be:
+Taking $C^s$ off the unit-root Euler drops one stable root. $\psi_{\mathrm{nfa}} E_t nfa_{t+1}$ inside the Taylor rule puts it back (36 stable roots, 6 finite unstable). That loading is a provisional SOE closure, not a description of the MPC's remit. Sterilisation still sets $\varepsilon^{\mathrm{ster}}_t = -i^{TR}_t$, and $i^{TR}$ includes the term.
+
+**Housing** `[PROVISIONAL]`. A sticky user-cost / housing Phillips curve, so the house-price trough is not forced onto the impact date the way a pure flexible asset price would be. $\varphi_h = 0.75$, $\kappa_c = 0.055$, $\mu_{\mathrm{coll}} = 0.10$ and $\kappa_{\mathrm{level}} = 0.05$ are dialled down from the first pass, which produced a trough of about $-9.5\%$ per $+100$ bp. That was far too large next to UK housing responses of a few percent per percentage point of Bank Rate. These loadings are not estimates.
 
 $$
 (1+\beta+\kappa_{\mathrm{level}}) P^h_t = P^h_{t-1} + \beta E_t P^h_{t+1} + \kappa_c C^b_t - \varphi_h \big(R^m_t - E_t\pi_{t+1}\big) - \kappa_H H_t.
@@ -161,38 +167,75 @@ $$
 
 $\chi_{\mathrm{nfa}} > 0$ and a passive tax rule $\tau_t = \varphi_{dg} \widetilde{B}^g_{t-1}$ close the open-economy and fiscal loops. $\varphi_\pi = 1.5$. $\beta = 0.995$.
 
-**Phillips curve.** Hybrid, with a flat slope $\kappa = 0.015$ `[PROVISIONAL]`. Under a 40-quarter peg a steep Phillips curve is a Fisher spiral: the sign of output can flip with the horizon, or an extra unstable root appears. The flat slope is what keeps the sterilised term-premium shock contractionary and the Blanchard–Kahn count at 36 stable and 36 unstable roots (6 of the unstable roots finite: $\pi$, $C^s$, $Q$, $P^h$, $R^{EH}$, $rer$). It is not an estimate of the UK Phillips curve.
+**Phillips curve.** Hybrid, with a flat slope $\kappa = 0.004$ `[PROVISIONAL]`. Under a peg that is long relative to $D = 9.1$ years, a steep Phillips curve is a Fisher spiral: expected easing after the peg can drive $R^L$ through zero. The flat slope keeps the sterilised long rate positive at $H \in \{8, 12, 20, 40\}$ and holds the Blanchard–Kahn count at 36 stable roots and 6 finite unstable roots. It is not an estimate of the UK Phillips curve. $H = 40$ with the old $\kappa = 0.015$ was a fragile way to get the same sign pattern; it is no longer the baseline.
 
-State count: 19 predetermined variables, 6 jumps, 11 static definitions. That is the “about 15–25 states” linear system.
+State count: 19 predetermined variables, 6 forward-looking variables in the declaration, 11 static definitions. Saver consumption is now a level rule (it does not lead $C^s$). That is the “about 15–25 states” linear system.
 
 ---
 
+## What changed after the review `[CHECK]`
+
+Five corrections, same branch. $\lambda_q$, $s^{IL}$ and $D$ were not retuned.
+
+1. **$C^s$ sign.** The forward habit Euler plus a $\Delta TP$ mark-to-market term produced peak $C^s \approx +0.5\%$ on a sterilised $+100$ bp term premium. Saver consumption is now the level rule above. On scenario (a), $C^s$ stays negative.
+2. **$P^h$ scale.** The trough is about $-2.6\%$ per $+100$ bp, not $-9.5\%$. $\kappa$ and the housing loadings are provisional.
+3. **$IB$ timing and units.** The conventional coupon still refixes at $1/(4D)$ per quarter. $IB$ is pp of GDP. The early dip is the index-linked uplift. The total peaks later because $\rho_{TP} = 0.90$ convolved with a coupon half-life of $\ln 2 / \delta_D \approx 25$ quarters.
+4. **Peg length.** Default $H = 12$. $H \in \{8, 20, 40\}$ are the same sign pattern. $H = 40$ is robustness only.
+5. **Labels.** Scenario (a) means the sterilised path only.
+
+Scenario (a), $H = 12$, innovation about $0.252$ quarterly percent, $\rho_{TP} = 0.90$, scaled so $R^L$ rises $100$ annualised bp on impact:
+
+| Variable | Scenario (a) |
+|---|---|
+| $Y$ | impact $-0.391\%$, trough $-0.545\%$ at quarter 4 |
+| $P^h$ | impact $-0.752\%$, trough $-2.60\%$ at quarter 8 |
+| $C^s$ | ranges $[-0.768\%,\ -0.081\%]$ (does not rise) |
+| $C^b$ | trough $-1.038\%$ at quarter 9, least negative $-0.227\%$ |
+| $IB$ | impact $-0.034$ pp of GDP, peak $+0.202$ at quarter 24 |
+
+Borrowers are hit harder than savers at both the trough and the least-negative quarter. $C^b$ lines up with $R^{m,\mathrm{stock}}$, which peaks at quarter 10.
+
 ## Success criteria `[CHECK]`
 
-Illustrative size: a term-premium innovation of about $0.236$ quarterly percent, persistence $0.93$, scaled so $R^L$ rises $100$ annualised bp on impact. Horizon 40. Interior equation residual about $10^{-14}$. The first 40 quarters are identical at simulation lengths 60 and 100.
+Horizon 40. Interior equation residual about $10^{-14}$. The first 40 quarters are identical at simulation lengths 60 and 100.
 
 | Check | Result |
 |---|---|
-| $R^L$ impact | $100$ annualised bp |
-| Bank Rate over the 40-quarter peg | numerically zero (max abs. about $10^{-12}$ annualised bp) |
+| $R^L$ impact | $100$ annualised bp; minimum over 40 quarters about $+2.4$ bp (stays positive) |
+| Bank Rate over the 12-quarter peg | numerically zero (max abs. about $10^{-13}$ annualised bp) |
 | $\varepsilon^{\mathrm{ster}} + i^{TR}$ | numerically zero |
-| Output | impact $-0.187\%$, trough $-0.364\%$ at quarter 9 |
-| House prices | impact $-1.81\%$ (no rise), trough $-9.46\%$ at quarter 12 |
+| Output | impact $-0.391\%$, trough $-0.545\%$ at quarter 4 |
+| House prices | impact $-0.752\%$ (no rise), trough $-2.60\%$ at quarter 8 |
 | $R^{\mathrm{eff}}_0 / R^L_0$ | $0.027473 = 1/(4D)$ |
-| Interest burden | impact $-0.093$ pp of GDP, peak $+0.346$ at quarter 31 |
-| $R^{\mathrm{eff}}$ | peaks at quarter 29, impact pass-through $1/(4D)$ of the long-rate move |
-| Consumption peaks | peak $C^b = -0.34\%$, peak $C^s = +0.51\%$ |
-| Timing | $C^b$ trough at quarter 11 ($-1.48\%$), $R^{m,\mathrm{stock}}$ peak at quarter 13 |
+| Interest burden | impact $-0.034$ pp of GDP, peak $+0.202$ at quarter 24 |
+| $R^{\mathrm{eff}}$ | peaks at quarter 17; impact pass-through $1/(4D)$ of the long-rate move |
+| Consumption | $C^s \in [-0.768,\ -0.081]$, $C^b \in [-1.038,\ -0.227]$ |
+| Timing | $C^b$ trough at quarter 9, $R^{m,\mathrm{stock}}$ peak at quarter 10 |
 
-The house-price trough sits on the last admissible quarter of the 4–12 window. The consumption-timing gap is exactly two quarters, which is the edge of the check. Both pass on this calibration and both move if the provisional housing or cashflow loadings are nudged. They were not tuned by changing $\lambda_q$, $s^{IL}$, or $D$.
+They were not tuned by changing $\lambda_q$, $s^{IL}$, or $D$.
 
-$IB$ is slightly negative on impact because the index-linked uplift falls with inflation, then rises as the conventional coupon refixes. A full immediate refix of the conventional stock would be $b^{\mathrm{nom}} \times R^L_0 = 0.75$ pp of GDP. The model peak is about half of that and arrives late, which is the $D$ and $s^{IL}$ timing the check asks for.
+**Interest burden, units and split.** $IB$ is percentage points of GDP, not a levels series that needs dividing by 100. Quarterly-percent coupons times a debt ratio in quarters of GDP cancel the 100. A full immediate refix of the conventional stock would be $b^{\mathrm{nom}} \times R^L_0 = 0.75$ pp of GDP. On impact $R^{\mathrm{eff}}_0 = R^L_0 /(4D)$, so the conventional book has only just started to refix.
 
-Inflation falls by about $52$ annualised bp on impact under (a). That is large next to a $-0.2\%$ output gap because the Phillips curve is forward-looking and the peg lasts the whole reported window. It is part of the same provisional flat-curve choice.
+$$
+IB_t = \underbrace{b^{\mathrm{nom}} R^{\mathrm{eff}}_t + \tfrac{i_{ss}}{100}(1-s^{IL})\widetilde{B}^g_t}_{\text{nominal coupon}} + \underbrace{b^{IL}(r^{IL}_t + \pi_t) + \tfrac{i_{ss}}{100}s^{IL}\widetilde{B}^g_t}_{\text{index-linked, including the uplift}}.
+$$
 
-**Same $TP$ innovation, Taylor rule free** `[CHECK]`. $R^L$ impact is about $99$ bp. Bank Rate rises about $12$ bp on impact and later troughs near $-17$ bp. Output rises about $0.51\%$ on impact. Sterilisation is what makes the output response negative in this calibration: saver carry and the endogenous Bank Rate path offset the mortgagor cashflow channel when the rule is left on.
+The index-linked piece is about $-0.056$ pp of GDP on impact (disinflation cuts the uplift). The nominal-coupon piece peaks near $+0.16$ pp at quarter 19. Their sum dips, then peaks at quarter 24. That is later than a one-quarter pass-through and earlier than a permanent level shift of the whole book, whose half-life is $\ln 2 / (1/(4D)) \approx 25$ quarters. $R^L$ itself decays at $\rho_{TP} = 0.90$, so the convolution peaks before that half-life. The one-panel split is `output/irf_a_ib_decomposition.png`. Columns `ib_nom` and `ib_il` are on `output/irf_tp_sterilised.csv`.
 
-**Scenario (b), same $+100$ bp long-rate scaling** `[CHECK]`. News persistence $\rho_\nu = 0.75$. Bank Rate impact is about $+295$ annualised bp (the expectations hypothesis only puts weight $\delta_D$ on the current short rate, and the news decays). Output impact is about $-4.2\%$, trough about $-5.7\%$ at quarter 3. House prices fall on impact (about $-5.9\%$) and trough near quarter 8. This is a different experiment from (a), not a larger version of the same residual.
+**Peg length** `[PROVISIONAL]`. Same sterilised device, each path scaled to $+100$ bp on impact. $H = 12$ is scenario (a).
+
+| $H$ | $Y$ trough | $P^h$ trough | $C^s$ max | $C^b$ trough | $IB$ peak | min $R^L$ |
+|---|---:|---:|---:|---:|---:|---:|
+| 8 | $-0.540\%$ | $-2.54\%$ q8 | $-0.082\%$ | $-1.024\%$ | $+0.202$ q25 | $+2.4$ bp |
+| 12 (a) | $-0.545\%$ | $-2.60\%$ q8 | $-0.081\%$ | $-1.038\%$ | $+0.202$ q24 | $+2.4$ bp |
+| 20 | $-0.549\%$ | $-2.64\%$ q9 | $-0.080\%$ | $-1.046\%$ | $+0.204$ q24 | $+2.3$ bp |
+| 40 | $-0.550\%$ | $-2.65\%$ q9 | $-0.079\%$ | $-1.048\%$ | $+0.205$ q24 | $+2.1$ bp |
+
+The sign pattern does not depend on a decade-long peg. Paths are in `output/irf_peg_robustness.csv`. $\kappa = 0.004$ and $\psi_{\mathrm{nfa}}$ are what keep $R^L$ from being driven through zero when the peg is short relative to duration; both are provisional.
+
+**Same $TP$ innovation, Taylor rule free** `[CHECK]`. **Not scenario (a).** With the innovation that delivers $+100$ bp when sterilised, unsterilised $R^L$ impact is about $95$ bp. Bank Rate falls about $6$ bp on impact and later troughs near $-24$ bp. Output impact is about $-0.35\%$, trough about $-0.49\%$ at quarter 4. House prices trough about $-2.2\%$. Saver consumption stays negative. This file is `output/irf_tp_unsterilised.csv`. `stoch_simul(e_tp)` is this experiment, not (a).
+
+**Scenario (b), same $+100$ bp long-rate scaling** `[CHECK]`. Not scenario (a). News persistence $\rho_\nu = 0.75$. Bank Rate impact is about $+315$ annualised bp (the expectations hypothesis only puts weight $\delta_D$ on the current short rate, and the news decays). Output impact is about $-0.87\%$, trough about $-1.18\%$ at quarter 5. House prices fall on impact (about $-1.95\%$) and trough about $-6.6\%$ at quarter 7. This is a different experiment from (a).
 
 ---
 

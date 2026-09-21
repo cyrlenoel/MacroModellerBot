@@ -24,10 +24,12 @@ python3 -m unittest discover -s src -p 'test_*.py'
 
 `src/run_irf.py` writes:
 
-- `output/irf_tp_sterilised.csv` and `output/irf_a_tp_sterilised.png` — scenario (a), +100 bp term premium, Bank Rate sterilised
-- `output/irf_tp_unsterilised.csv` — the same term-premium innovation with the Taylor rule left on
-- `output/irf_short_rate_news.csv` — scenario (b), short-rate news scaled to the same +100 bp long-rate move
-- `output/irf_a_vs_b_y_ph.png` — output and house prices, (a) against (b)
+- `output/irf_tp_sterilised.csv` and `output/irf_a_tp_sterilised.png` — **scenario (a) only**: +100 bp term premium, Bank Rate sterilised for $H = 12$ quarters. Includes `ib_nom` and `ib_il`
+- `output/irf_a_ib_decomposition.png` — one-panel split of that interest burden into nominal coupon and index-linked uplift
+- `output/irf_peg_robustness.csv` and `output/irf_peg_robustness.png` — the same sterilised device at $H \in \{8, 12, 20, 40\}$. Only $H = 12$ is scenario (a)
+- `output/irf_tp_unsterilised.csv` — **not scenario (a)**. Same term-premium innovation, Taylor rule left on (what `stoch_simul` does)
+- `output/irf_short_rate_news.csv` — scenario (b), short-rate news scaled to the same +100 bp long-rate move. Not scenario (a)
+- `output/irf_a_vs_b_y_ph.png` — output and house prices, sterilised (a) against news (b)
 - `output/success_checks.txt`
 
 `src/lp_proxyvar.py` does not ship surprise data. With no `data/gilt_surprises.csv` it writes `output/lp_irf_stub_Y_Ph.csv` full of NaNs and exits 0.

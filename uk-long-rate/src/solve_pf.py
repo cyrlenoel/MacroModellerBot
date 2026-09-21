@@ -168,11 +168,15 @@ def taylor_notional(model: LinearModel, path: Path) -> np.ndarray:
     pi = path.series(model, "pi")
     y = path.series(model, "y")
     nu = path.series(model, "nu")
+    nfa = path.series(model, "nfa")
     i_lag = np.zeros_like(i)
     i_lag[1:] = i[:-1]
+    nfa_lead = np.zeros_like(nfa)
+    nfa_lead[:-1] = nfa[1:]
     return (
         cal.rho_i * i_lag
         + (1.0 - cal.rho_i) * (cal.phi_pi * pi + cal.phi_y_qp * y)
+        + cal.psi_nfa * nfa_lead
         + nu
     )
 

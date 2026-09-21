@@ -18,19 +18,21 @@
     (b) e_news  short-rate path news. Taylor rule left free.
     (c) e_rhofx UIP risk-premium slot. Not fired in the MVP IRFs.
 
-  stoch_simul below is an UNSTERILISED preview. Scenario (a) is the
-  anticipated Bank Rate peg in run_uk_long_rate.m and in
+  stoch_simul below is NOT scenario (a). It is an UNSTERILISED preview:
+  Bank Rate follows the Taylor rule. Scenario (a) is ONLY the anticipated
+  Bank Rate peg in run_uk_long_rate.m and in
   src/solve_pf.py:solve_sterilised_qz. Do not read the e_tp IRF from
   stoch_simul as scenario (a).
 
-  Sterilisation device:
+  Sterilisation device (scenario (a) only):
     anticipated Bank Rate peg: the Taylor rule is left in place and the
     monetary residual is set to e_ster,t = -i_t^TR for the first H
-    quarters, with i_t^path = 0, so
-      i_t = rho_i*i_{t-1} + (1-rho_i)*(phi_pi*pi_t + phi_y*Y_t) + nu_t
-            + e_ster,t = 0;
-    residuals are anticipated (perfect foresight) and the Taylor rule
-    resumes after H.
+    quarters (default H = 12; H in {8,20,40} are robustness only), with
+    i_t^path = 0, so
+      i_t = rho_i*i_{t-1} + (1-rho_i)*(phi_pi*pi_t + phi_y_qp*Y_t)
+            + psi_nfa*nfa_{t+1} + nu_t + e_ster,t = 0;
+    psi_nfa is inside i^TR. Residuals are anticipated (perfect foresight)
+    and the Taylor rule resumes after H.
 */
 
 var
@@ -45,7 +47,7 @@ parameters
   lambda_q s_IL D
   beta sigma h_s kappa iota phi_pi phi_y rho_i
   rho_tp rho_nu omega_S omega_L omega_f_S omega_f_L
-  mu_ds alpha_y mu_coll omega_cs omega_cb carry mtm fisc_coef theta_dom
+  mu_ds alpha_y mu_coll omega_cs omega_cb psi_tp psi_y_cs psi_ib psi_tau psi_nfa
   kappa_c phi_h kappa_H kappa_level phi_q psi_k psi_h delta_k delta_h
   s_C s_I s_HI s_G
   eta_rer eta_y eta_ys chi_nfa
@@ -60,32 +62,33 @@ D        = 9.1;
 
 % --- Provisional sketch calibration (see NOTES.md). Not estimates. --------
 beta = 0.995;
-sigma = 1.0;
-h_s = 0.50;
-kappa = 0.015;
+sigma = 6.0;
+h_s = 0.40;
+kappa = 0.004;
 iota = 0.30;
 phi_pi = 1.50;
 phi_y = 0.125;
-rho_i = 0.80;
-rho_tp = 0.93;
+rho_i = 0.86;
+psi_nfa = 0.08;
+rho_tp = 0.90;
 rho_nu = 0.75;
 omega_S = 0.30;
 omega_L = 0.70;
 omega_f_S = 0.35;
 omega_f_L = 0.65;
-mu_ds = 16.0;
-alpha_y = 0.10;
-mu_coll = 0.40;
+mu_ds = 15.0;
+alpha_y = 0.15;
+mu_coll = 0.10;
 omega_cs = 0.62;
 omega_cb = 0.38;
-carry = 1.2;
-mtm = -0.8;
-fisc_coef = 0.30;
-theta_dom = 0.70;
-kappa_c = 0.16;
-phi_h = 0.70;
-kappa_H = 0.04;
-kappa_level = 0.03;
+psi_tp = 2.0;
+psi_y_cs = 0.10;
+psi_ib = 0.02;
+psi_tau = 0.12;
+kappa_c = 0.055;
+phi_h = 0.75;
+kappa_H = 0.03;
+kappa_level = 0.05;
 phi_q = 0.90;
 psi_k = 6.0;
 psi_h = 3.0;
@@ -119,10 +122,10 @@ model(linear);
   #nkpc_forward = beta/(1+beta*iota);
   #nkpc_lag = iota/(1+beta*iota);
   #eis = (1-h_s)/sigma;
-  #inc_scale = 1-h_s;
 
   % eq: taylor
-  i = rho_i*i(-1) + (1-rho_i)*(phi_pi*pi + phi_y_qp*y) + nu + e_ster;
+  % psi_nfa*nfa(+1) is inside i^TR and is offset by e_ster under scenario (a).
+  i = rho_i*i(-1) + (1-rho_i)*(phi_pi*pi + phi_y_qp*y) + psi_nfa*nfa(+1) + nu + e_ster;
   % eq: capital
   k = (1-delta_k)*k(-1) + delta_k*inv;
   % eq: housing_stock
@@ -162,8 +165,9 @@ model(linear);
   % eq: nkpc
   pi = nkpc_forward*pi(+1) + nkpc_lag*pilag + kappa*y + u;
   % eq: saver_euler
-  % Habit loads on contemporaneous cslag (= Cs_{t-1}), not on cslag(-1).
-  (1+h_s)*cs = h_s*cslag + cs(+1) - eis*(i - pi(+1)) + inc_scale*((carry+mtm)*tp - mtm*tp(-1) + fisc_coef*(theta_dom*ib - tau));
+  % Level rule, not a unit-root Euler. Habit loads on cslag_t = Cs_{t-1}.
+  % psi_tp > 0: a higher term premium is a duration loss and cuts Cs.
+  cs = h_s*cslag - psi_tp*tp - eis*(i - pi(+1)) + psi_y_cs*y + psi_ib*ib - psi_tau*tau;
   % eq: tobin_q
   % mpk is contemporaneous. A lead of output here adds an explosive root.
   q = beta*q(+1) + (1-beta)*mpk - phi_q*(omega_f_S*(i - pi(+1)) + omega_f_L*(rl - pi(+1)));
@@ -210,9 +214,9 @@ end;
 steady;
 check;
 
-% Positive shock variances so stoch_simul runs. These IRFs are NOT scenario (a):
-% Bank Rate is free to follow the Taylor rule. The sterilised experiment is
-% run_uk_long_rate.m (and the Python QZ path).
+% NOT SCENARIO (a). Positive shock variances so stoch_simul runs.
+% These IRFs leave the Taylor rule free. Scenario (a) is ONLY the sterilised
+% peg in run_uk_long_rate.m (default H = 12) and the Python QZ path.
 shocks;
   var e_ster; stderr 0.01;
   var e_tp; stderr 0.01;

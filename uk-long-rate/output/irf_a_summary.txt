@@ -1,18 +1,22 @@
-anticipated Bank Rate peg: the Taylor rule is left in place and the monetary residual is set to ε_ster,t = −i_t^TR for the first H quarters, with i_t^path = 0, so i_t = ρ_i i_{t−1} + (1−ρ_i)(φ_π π_t + φ_y Y_t) + ν_t + ε_ster,t = 0; residuals are anticipated (perfect foresight) and the Taylor rule resumes after H
+anticipated Bank Rate peg: the Taylor rule is left in place and the monetary residual is set to ε_ster,t = −i_t^TR for the first H quarters, with i_t^path = 0, so i_t = ρ_i i_{t−1} + (1−ρ_i)(φ_π π_t + φ_y Y_t) + ψ_nfa E_t nfa_{t+1} + ν_t + ε_ster,t = 0; residuals are anticipated (perfect foresight) and the Taylor rule resumes after H. Scenario (a) is this sterilised path only. stoch_simul and any unsterilised TP run leave the Taylor rule free and are not scenario (a)
 
 [PASS] long rate +100 bp on impact: R^L impact = 100.000 annualised bp
-[PASS] Bank Rate pegged over H: max |i| over 40q = 4.792e-13 annualised bp
-[PASS] sterilising residual offsets the Taylor rule: max |ε_ster + i^TR| = 3.883e-15 quarterly percent
-[PASS] output falls: Y impact = -0.187%, trough = -0.364% at q9
-[PASS] house prices fall on impact: P^h impact = -1.809%
-[PASS] house-price trough in quarters 4-12: P^h trough = -9.462% at q12
+[PASS] Bank Rate pegged over H: max |i| over 12q = 6.195e-14 annualised bp
+[PASS] sterilising residual offsets the Taylor rule: max |ε_ster + i^TR| = 2.623e-15 quarterly percent
+[PASS] output falls: Y impact = -0.391%, trough = -0.545% at q4
+[PASS] house prices fall on impact: P^h impact = -0.752%
+[PASS] house-price trough in quarters 4-12: P^h trough = -2.597% at q8
+[PASS] house-price trough is a few percent, not a double-digit move: P^h trough = -2.597% (provisional housing loadings)
 [PASS] effective coupon refixes at 1/(4D): R^eff_0 / R^L_0 = 0.027473, 1/(4D) = 0.027473
-[PASS] interest burden rises, slower than full refix: IB impact = -0.0930 pp of GDP, peak = 0.3457 at q31, full conventional refix would be 0.7500; R^eff peaks at q29
-[PASS] peak borrower consumption does not exceed savers: peak C^b = -0.3358%, peak C^s = 0.5080%
-[PASS] borrower trough lines up with the mortgage-stock rate: C^b trough at q11 (-1.475%), R^m,stock peak at q13
+[PASS] interest burden rises, slower than full refix: IB impact = -0.0340 pp of GDP, peak = 0.2017 at q24, full conventional refix would be 0.7500; R^eff peaks at q17
+[PASS] saver consumption does not rise: C^s ranges [-0.768%, -0.081%]
+[PASS] borrowers are hit at least as hard as savers: C^b ranges [-1.038%, -0.227%], C^s ranges [-0.768%, -0.081%]
+[PASS] long rate stays positive over the reported window: min R^L over 40q = 2.35 annualised bp
+[PASS] IL uplift dips on impact and the nominal coupon rises: IL component impact -0.0563 pp of GDP, nominal-coupon peak 0.1585 at q19
+[PASS] borrower trough lines up with the mortgage-stock rate: C^b trough at q9 (-1.038%), R^m,stock peak at q10
 
 ALL PASS
 
-Interior residual (first 39 leads): 4.263e-14
+Interior residual (first 39 leads): 1.477e-14
 Blanchard-Kahn stable roots: 36 (need 36)
-TP innovation = 0.235633 quarterly percent; news innovation = 1.04652 quarterly percent.
+TP innovation = 0.252021 quarterly percent; news innovation = 0.886554 quarterly percent.

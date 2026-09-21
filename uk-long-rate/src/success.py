@@ -9,16 +9,18 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from src.linear_model import LinearModel
+from src.linear_model import LinearModel, interest_burden_split
 from src.solve_pf import Path, taylor_notional
 
 
 STERILISATION_DEVICE = (
     "anticipated Bank Rate peg: the Taylor rule is left in place and the "
     "monetary residual is set to ε_ster,t = −i_t^TR for the first H quarters, "
-    "with i_t^path = 0, so i_t = ρ_i i_{t−1} + (1−ρ_i)(φ_π π_t + φ_y Y_t) + ν_t "
-    "+ ε_ster,t = 0; residuals are anticipated (perfect foresight) and the "
-    "Taylor rule resumes after H"
+    "with i_t^path = 0, so i_t = ρ_i i_{t−1} + (1−ρ_i)(φ_π π_t + φ_y Y_t) "
+    "+ ψ_nfa E_t nfa_{t+1} + ν_t + ε_ster,t = 0; residuals are anticipated "
+    "(perfect foresight) and the Taylor rule resumes after H. "
+    "Scenario (a) is this sterilised path only. stoch_simul and any "
+    "unsterilised TP run leave the Taylor rule free and are not scenario (a)"
 )
 
 
@@ -55,8 +57,16 @@ def evaluate_scenario_a(model: LinearModel, path: Path, horizon: int | None = No
     q_rms = _q(int(np.argmax(rms)))
     q_ib = _q(int(np.argmax(ib)))
     q_reff = _q(int(np.argmax(reff)))
+    ib_nom, ib_il = interest_burden_split(
+        model,
+        path.series(model, "reff")[:h],
+        path.series(model, "ril")[:h],
+        path.series(model, "pi")[:h],
+        path.series(model, "dg")[:h],
+    )
 
     full_pass = cal.b_nom * rl[0]  # IB if the whole conventional stock refixed at once
+    both_down = float(np.max(cs)) <= 1e-3 and float(np.max(cb)) <= 1e-3
     checks = [
         CheckResult(
             "long rate +100 bp on impact",
@@ -86,8 +96,13 @@ def evaluate_scenario_a(model: LinearModel, path: Path, horizon: int | None = No
         ),
         CheckResult(
             "house-price trough in quarters 4-12",
-            4 <= q_ph <= 12,
+            4 <= q_ph <= 12 and q_ph < h,
             f"P^h trough = {np.min(ph):.3f}% at q{q_ph}",
+        ),
+        CheckResult(
+            "house-price trough is a few percent, not a double-digit move",
+            bool(-4.5 <= float(np.min(ph)) <= -1.0),
+            f"P^h trough = {np.min(ph):.3f}% (provisional housing loadings)",
         ),
         CheckResult(
             "effective coupon refixes at 1/(4D)",
@@ -104,9 +119,34 @@ def evaluate_scenario_a(model: LinearModel, path: Path, horizon: int | None = No
             ),
         ),
         CheckResult(
-            "peak borrower consumption does not exceed savers",
-            bool(np.max(cb) <= np.max(cs) + 1e-6),
-            f"peak C^b = {np.max(cb):.4f}%, peak C^s = {np.max(cs):.4f}%",
+            "saver consumption does not rise",
+            bool(float(np.max(cs)) <= 1e-3 and float(np.min(cs)) < -0.05),
+            f"C^s ranges [{np.min(cs):.3f}%, {np.max(cs):.3f}%]",
+        ),
+        CheckResult(
+            "borrowers are hit at least as hard as savers",
+            bool(
+                both_down
+                and float(np.max(cb)) <= float(np.max(cs)) + 1e-6
+                and float(np.min(cb)) <= float(np.min(cs)) + 1e-6
+            ),
+            (
+                f"C^b ranges [{np.min(cb):.3f}%, {np.max(cb):.3f}%], "
+                f"C^s ranges [{np.min(cs):.3f}%, {np.max(cs):.3f}%]"
+            ),
+        ),
+        CheckResult(
+            "long rate stays positive over the reported window",
+            bool(float(np.min(rl)) > 0.0),
+            f"min R^L over {h}q = {np.min(rl) * 400:.2f} annualised bp",
+        ),
+        CheckResult(
+            "IL uplift dips on impact and the nominal coupon rises",
+            bool(float(ib_il[0]) < 0.0 and float(np.max(ib_nom)) > 0.0),
+            (
+                f"IL component impact {ib_il[0]:.4f} pp of GDP, "
+                f"nominal-coupon peak {np.max(ib_nom):.4f} at q{_q(int(np.argmax(ib_nom)))}"
+            ),
         ),
         CheckResult(
             "borrower trough lines up with the mortgage-stock rate",

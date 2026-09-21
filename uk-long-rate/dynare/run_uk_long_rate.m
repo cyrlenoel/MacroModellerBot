@@ -8,8 +8,10 @@
 %   cd uk-long-rate
 %   python3 src/run_irf.py
 %
-% Scenario (a) is NOT oo_.irfs.e_tp_*. stoch_simul leaves the Taylor rule
-% free. The block below builds the anticipated residual that pegs Bank Rate.
+% Scenario (a) is NOT oo_.irfs.e_tp_*. stoch_simul is NOT scenario (a):
+% it leaves the Taylor rule free. The block below builds the anticipated
+% residual that pegs Bank Rate. Default H = 12. H = 40 is robustness only
+% (see the Python runner's irf_peg_robustness.csv).
 %
 % Sterilisation device (report this on every scenario-(a) table):
 %   anticipated Bank Rate peg: the Taylor rule is left in place and the
@@ -24,7 +26,7 @@ cd(this_dir);
 
 dynare uk_long_rate noclearall;
 
-H = 40;
+H = 12;  % scenario (a). Not H = 40.
 T = 80;
 target_rl = 0.25;  % quarterly percent = 100 annualised bp
 

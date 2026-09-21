@@ -22,8 +22,13 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.linear_model import build_model  # noqa: E402
-from src.plot_irf import plot_scenario_a, plot_a_versus_b  # noqa: E402
+from src.linear_model import build_model, interest_burden_split  # noqa: E402
+from src.plot_irf import (  # noqa: E402
+    plot_a_versus_b,
+    plot_ib_decomposition,
+    plot_peg_robustness,
+    plot_scenario_a,
+)
 from src.solve_pf import (  # noqa: E402
     eigenvalue_summary,
     solve_qz,
@@ -61,13 +66,23 @@ def _scale_to_long_rate(model, path):
     return scale
 
 
-def _frame(model, path, horizon: int) -> dict[str, np.ndarray]:
+def _frame(model, path, horizon: int, with_ib_split: bool = False) -> dict[str, np.ndarray]:
     out = {"quarter": np.arange(1, horizon + 1, dtype=int)}
     for name in RATE_NAMES:
         out[f"{name}_bp"] = path.series(model, name)[:horizon] * 400.0
     for name in LEVEL_NAMES:
         out[name] = path.series(model, name)[:horizon]
     out["e_ster_bp"] = path.e_ster[:horizon] * 400.0
+    if with_ib_split:
+        ib_nom, ib_il = interest_burden_split(
+            model,
+            path.series(model, "reff")[:horizon],
+            path.series(model, "ril")[:horizon],
+            path.series(model, "pi")[:horizon],
+            path.series(model, "dg")[:horizon],
+        )
+        out["ib_nom"] = ib_nom
+        out["ib_il"] = ib_il
     return out
 
 
@@ -122,13 +137,22 @@ def main() -> int:
     out = ROOT / "output"
     out.mkdir(exist_ok=True)
 
-    note_a = STERILISATION_DEVICE + f" | H={cal.H_peg} | TP innovation (qp)={scale_a:.6g}"
-    _write_csv(out / "irf_tp_sterilised.csv", _frame(model, path_a, horizons), note_a)
+    note_a = (
+        "SCENARIO (a) = STERILISED TERM PREMIUM ONLY. "
+        + STERILISATION_DEVICE
+        + f" | H={cal.H_peg} | TP innovation (qp)={scale_a:.6g}"
+    )
+    _write_csv(
+        out / "irf_tp_sterilised.csv",
+        _frame(model, path_a, horizons, with_ib_split=True),
+        note_a,
+    )
     _write_csv(
         out / "irf_tp_unsterilised.csv",
         _frame(model, path_raw, horizons),
-        "Same TP innovation as the sterilised experiment, Taylor rule left to operate. "
-        + "Not scenario (a).",
+        "NOT SCENARIO (a). Same TP innovation as the sterilised experiment, "
+        "Taylor rule left to operate (this is what stoch_simul of e_tp does). "
+        "Scenario (a) is irf_tp_sterilised.csv only.",
     )
     _write_csv(
         out / "irf_short_rate_news.csv",
@@ -150,6 +174,45 @@ def main() -> int:
 
     plot_scenario_a(model, path_a, path_raw, out / "irf_a_tp_sterilised.png")
     plot_a_versus_b(model, path_a, path_b, out / "irf_a_vs_b_y_ph.png")
+    plot_ib_decomposition(model, path_a, out / "irf_a_ib_decomposition.png")
+
+    # Peg-length robustness. H = H_peg is scenario (a). Other horizons are not.
+    robust_rows = []
+    robust_paths = {}
+    for H in (8, 12, 20, 40):
+        path_h = solve_sterilised_qz(model, {"e_tp": _impulse(T, 1.0)}, H=H, T=T)
+        _scale_to_long_rate(model, path_h)
+        robust_paths[H] = path_h
+        frame_h = _frame(model, path_h, horizons, with_ib_split=True)
+        for q in range(horizons):
+            robust_rows.append(
+                {
+                    "H": H,
+                    "scenario_a": int(H == cal.H_peg),
+                    "quarter": q + 1,
+                    "y": frame_h["y"][q],
+                    "ph": frame_h["ph"][q],
+                    "cs": frame_h["cs"][q],
+                    "cb": frame_h["cb"][q],
+                    "ib": frame_h["ib"][q],
+                    "ib_nom": frame_h["ib_nom"][q],
+                    "ib_il": frame_h["ib_il"][q],
+                    "rl_bp": frame_h["rl_bp"][q],
+                    "i_bp": frame_h["i_bp"][q],
+                }
+            )
+    rob_keys = list(robust_rows[0])
+    rob_path = out / "irf_peg_robustness.csv"
+    with rob_path.open("w", encoding="utf-8") as fh:
+        fh.write(
+            "# Peg-length robustness for the SAME sterilising device. "
+            "scenario_a=1 is the default H only. H=40 is a robustness case, "
+            "not the baseline. stoch_simul is not in this file.\n"
+        )
+        fh.write(",".join(rob_keys) + "\n")
+        for row in robust_rows:
+            fh.write(",".join(f"{row[k]:.8g}" if k not in ("H", "scenario_a", "quarter") else str(row[k]) for k in rob_keys) + "\n")
+    plot_peg_robustness(model, robust_paths, out / "irf_peg_robustness.png")
 
     print(log)
     if resid > 1e-8:

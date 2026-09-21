@@ -134,10 +134,13 @@ def build_model(cal: Calibration | None = None) -> LinearModel:
     # --- predetermined -------------------------------------------------------
     e = eq("taylor")
     # i = rho i(-1) + (1-rho)(phi_pi pi + phi_y_qp y) + nu + e_ster
+    # i = rho i(-1) + (1-rho)(phi_pi pi + phi_y_qp y) + psi_nfa E nfa(+1) + nu + e_ster
+    # psi_nfa is inside i^TR, so the sterilising residual offsets it too.
     c(e, "i", 1.0)
     lag(e, "i", -rho)
     c(e, "pi", -(1.0 - rho) * cal.phi_pi)
     c(e, "y", -(1.0 - rho) * cal.phi_y_qp)
+    p(e, "nfa", -cal.psi_nfa)
     c(e, "nu", -1.0)
     shock(e, "e_ster", -1.0)
 
@@ -254,22 +257,20 @@ def build_model(cal: Calibration | None = None) -> LinearModel:
     c(e, "u", -1.0)
 
     e = eq("saver_euler")
-    # Habit Euler, external habit. inc_pct is a percent-of-consumption shifter
-    # (duration carry, mark-to-market, domestic coupons net of taxes), scaled so
-    # a permanent inc_pct of x raises Cs by x:
-    #   (1+h) Cs - h cslag - Cs(+1) + eis (i - pi(+1)) - (1-h) inc_pct = 0
-    # inc_pct = carry*TP + mtm*(TP - TP(-1)) + fisc*(theta_dom*IB - tau)
-    # mtm < 0: a positive TP innovation is a capital loss.
-    inc_scale = 1.0 - cal.h_s
-    c(e, "cs", 1.0 + cal.h_s)
+    # Level rule, not a forward habit Euler. The Euler's near-unit root turns
+    # a front-loaded mark-to-market loss into a later consumption boom, and a
+    # ΔTP term books capital gains as soon as the premium decays. Here the
+    # duration loss is a level on TP (psi_tp > 0), the short-rate EIS is small,
+    # and coupon income (psi_ib) does not overturn the loss:
+    #   Cs = h Cs_lag - psi_tp TP - eis (i - E pi) + psi_y Y + psi_ib IB - psi_tau tau
+    c(e, "cs", 1.0)
     c(e, "cslag", -cal.h_s)
-    p(e, "cs", -1.0)
+    c(e, "tp", cal.psi_tp)
     c(e, "i", eis)
     p(e, "pi", -eis)
-    c(e, "tp", -inc_scale * (cal.carry + cal.mtm))
-    lag(e, "tp", inc_scale * cal.mtm)
-    c(e, "ib", -inc_scale * cal.fisc_coef * cal.theta_dom)
-    c(e, "tau", inc_scale * cal.fisc_coef)
+    c(e, "y", -cal.psi_y_cs)
+    c(e, "ib", -cal.psi_ib)
+    c(e, "tau", cal.psi_tau)
 
     e = eq("tobin_q")
     # Q = beta E Q(+1) + (1-beta) mpk - phi_q * r_firm
@@ -387,6 +388,10 @@ def build_model(cal: Calibration | None = None) -> LinearModel:
         raise RuntimeError("saver habit should enter as -h * cslag_t")
     if abs(Ml[euler, ix["cslag"]]) > 1e-12:
         raise RuntimeError("saver habit must not also load on cslag(-1)")
+    if abs(Mp[euler, ix["cs"]]) > 1e-12:
+        raise RuntimeError("saver consumption is a level rule and must not lead Cs")
+    if cal.psi_tp <= 0:
+        raise RuntimeError("psi_tp must be positive so a TP rise cuts saver consumption")
 
     return LinearModel(
         cal=cal,
@@ -398,3 +403,19 @@ def build_model(cal: Calibration | None = None) -> LinearModel:
         Me=Me,
         eq_names=tuple(eq_names),
     )
+
+
+def interest_burden_split(model: LinearModel, reff, ril, pi, dg):
+    """Nominal-coupon and index-linked pieces of IB, pp of quarterly GDP.
+
+    Same identity as the ``interest_burden`` equation. The IL piece includes
+    the inflation uplift (``b_IL * pi``). Real debt is not marked up a second time.
+    """
+    cal = model.cal
+    ss_nom = (cal.i_ss_qp / 100.0) * (1.0 - cal.s_IL)
+    ss_il = ((cal.r_ss_qp + cal.pi_ss_qp) / 100.0) * cal.s_IL
+    ib_nom = cal.b_nom * np.asarray(reff, dtype=float) + ss_nom * np.asarray(dg, dtype=float)
+    ib_il = cal.b_IL * (np.asarray(ril, dtype=float) + np.asarray(pi, dtype=float)) + ss_il * np.asarray(
+        dg, dtype=float
+    )
+    return ib_nom, ib_il

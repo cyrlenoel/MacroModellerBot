@@ -12,7 +12,7 @@ This environment has no MATLAB, Octave, or Dynare. The IRFs checked into `../out
 | `params_calibration.m` | The same numbers as `src/calibration.py` |
 | `run_uk_long_rate.m` | Anticipated Bank Rate peg for scenario (a) |
 
-`stoch_simul` inside the `.mod` is an unsterilised preview. Scenario (a) is the perfect-foresight peg in the driver, not the `e_tp` impulse response from `stoch_simul`.
+**`stoch_simul` is not scenario (a).** It is an unsterilised preview: Bank Rate follows the Taylor rule. Scenario (a) is only the perfect-foresight peg in the driver (default `H = 12`), not the `e_tp` impulse response from `stoch_simul`.
 
 ## How to run
 
@@ -22,19 +22,19 @@ cd('/path/to/uk-long-rate/dynare')
 run_uk_long_rate
 ```
 
-The driver writes `../output/dynare_irf_tp_sterilised.csv`. Compare Bank Rate (should be numerically zero over 40 quarters) and the long rate (100 annualised bp on impact) with `../output/irf_tp_sterilised.csv`.
+The driver writes `../output/dynare_irf_tp_sterilised.csv`. Compare Bank Rate (should be numerically zero over the `H = 12` peg) and the long rate (100 annualised bp on impact) with `../output/irf_tp_sterilised.csv`.
 
 Dynare 4.6 and 5 store `oo_.exo_simul` with `T+2` rows: period 0, the `T` simulation dates, and a terminal row. The driver detects that layout and also accepts a `T`-row layout.
 
 ## Sterilisation
 
-Anticipated Bank Rate peg: the Taylor rule stays in the model. For the first `H = 40` quarters the driver solves
+Anticipated Bank Rate peg: the Taylor rule stays in the model, including the provisional $\psi_{\mathrm{nfa}} E_t nfa_{t+1}$ term, which is part of $i^{TR}$. For the first `H = 12` quarters the driver solves
 
 $$
 \varepsilon^{\mathrm{ster}}_t = -i^{\mathrm{TR}}_t
 $$
 
-so that Bank Rate stays on the steady-state path. The residuals are known at date 0. After quarter 40 the residual is zero and the Taylor rule resumes. A permanent peg is not used, because it leaves inflation undetermined.
+so that Bank Rate stays on the steady-state path. The residuals are known at date 0. After quarter 12 the residual is zero and the Taylor rule resumes. A permanent peg is not used, because it leaves inflation undetermined. `H = 40` is a robustness case in the Python runner, not the baseline.
 
 ## Estimation
 

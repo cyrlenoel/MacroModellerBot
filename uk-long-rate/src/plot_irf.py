@@ -46,7 +46,7 @@ def plot_scenario_a(
     labels = {
         axes[1, 0]: ("new advances $R^m$", "stock $R^{m,stock}$"),
         axes[2, 0]: ("savers $C^s$", "borrowers $C^b$"),
-        axes[0, 1]: ("sterilised (a)", "same TP shock, Taylor rule"),
+        axes[0, 1]: ("scenario (a), sterilised", "NOT (a): Taylor rule free"),
     }
     for ax, title, main, unit, extra in series:
         ax.axhline(0.0, color="0.6", lw=0.6)
@@ -61,8 +61,9 @@ def plot_scenario_a(
     for ax in axes[2, :]:
         ax.set_xlabel("quarter")
     fig.suptitle(
-        "Scenario (a): +100 bp term premium, Bank Rate sterilised",
-        fontsize=12,
+        f"SCENARIO (a) ONLY — sterilised +100 bp term premium, H={model.cal.H_peg}. "
+        "stoch_simul and the dashed Bank Rate path are NOT scenario (a).",
+        fontsize=10,
     )
     fig.text(
         0.01,
@@ -109,8 +110,8 @@ def plot_a_versus_b(
         ax.set_xlim(1, h)
         ax.legend(frameon=False, fontsize=8)
     fig.suptitle(
-        "Output and house prices: sterilised term premium versus short-rate news\n"
-        "(both scaled to +100 bp on the model long rate)",
+        "Output and house prices, both scaled to +100 bp on the model long rate\n"
+        "Solid: scenario (a), sterilised TP only. Dashed: scenario (b), not (a).",
         fontsize=11,
     )
     fig.text(
@@ -121,7 +122,77 @@ def plot_a_versus_b(
         ha="left",
         va="bottom",
     )
-    fig.tight_layout(rect=(0, 0.08, 1, 0.88))
+    fig.tight_layout(rect=(0, 0.08, 1, 0.86))
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(dest, dpi=140)
+    plt.close(fig)
+
+
+def plot_ib_decomposition(model: LinearModel, sterilised: Path, dest: Path) -> None:
+    """One panel: IB split into conventional coupon and index-linked uplift."""
+    from src.linear_model import interest_burden_split
+
+    h = model.cal.irf_horizon
+    q = np.arange(1, h + 1)
+    ib_nom, ib_il = interest_burden_split(
+        model,
+        sterilised.series(model, "reff")[:h],
+        sterilised.series(model, "ril")[:h],
+        sterilised.series(model, "pi")[:h],
+        sterilised.series(model, "dg")[:h],
+    )
+    total = sterilised.series(model, "ib")[:h]
+    fig, ax = plt.subplots(figsize=(7.4, 4.2))
+    ax.axhline(0.0, color="0.6", lw=0.6)
+    ax.plot(q, total, color="#1a1a1a", lw=1.8, label="total IB")
+    ax.plot(q, ib_nom, color="#8c2f39", lw=1.5, label="nominal coupon")
+    ax.plot(q, ib_il, color="#1f4e79", lw=1.5, ls="--", label="index-linked (incl. uplift)")
+    ax.set_xlim(1, h)
+    ax.set_xlabel("quarter")
+    ax.set_ylabel("pp of GDP")
+    ax.set_title(
+        f"Scenario (a) only, H={model.cal.H_peg}: interest burden = nominal coupon + IL\n"
+        "Not a stoch_simul or unsterilised path. Refix speed of the coupon book is 1/(4D).",
+        fontsize=10,
+    )
+    ax.legend(frameon=False, fontsize=8)
+    fig.tight_layout()
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(dest, dpi=140)
+    plt.close(fig)
+
+
+def plot_peg_robustness(model: LinearModel, paths: dict[int, Path], dest: Path) -> None:
+    """Sterilised IRFs at several peg lengths. Only H_peg is scenario (a)."""
+    h = model.cal.irf_horizon
+    q = np.arange(1, h + 1)
+    default_h = model.cal.H_peg
+    colours = {8: "#4c78a8", 12: "#8c2f39", 20: "#f58518", 40: "#54a24b"}
+    fig, axes = plt.subplots(2, 2, figsize=(9.4, 6.4), sharex=True)
+    panels = [
+        (axes[0, 0], "Output", "y", "%"),
+        (axes[0, 1], "House prices", "ph", "%"),
+        (axes[1, 0], "Saver consumption", "cs", "%"),
+        (axes[1, 1], "Borrower consumption", "cb", "%"),
+    ]
+    for ax, title, name, unit in panels:
+        ax.axhline(0.0, color="0.6", lw=0.6)
+        for H, path in paths.items():
+            lw = 2.0 if H == default_h else 1.2
+            label = f"H={H} scenario (a)" if H == default_h else f"H={H} robustness"
+            ax.plot(q, path.series(model, name)[:h], color=colours.get(H, "0.3"), lw=lw, label=label)
+        ax.set_title(title, fontsize=10)
+        ax.set_ylabel(unit)
+        ax.set_xlim(1, h)
+    for ax in axes[1, :]:
+        ax.set_xlabel("quarter")
+    axes[0, 0].legend(frameon=False, fontsize=7)
+    fig.suptitle(
+        f"Sterilised TP at several peg lengths. Scenario (a) is H={default_h} only.\n"
+        "H=40 is a robustness case. These are not stoch_simul paths.",
+        fontsize=11,
+    )
+    fig.tight_layout(rect=(0, 0, 1, 0.90))
     dest.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(dest, dpi=140)
     plt.close(fig)

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import sys
 import unittest
+from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
@@ -58,6 +59,14 @@ class SuccessTests(unittest.TestCase):
         other = _scaled_a(model, T=100)
         gap = np.max(np.abs(path.y[:40] - other.y[:40]))
         self.assertEqual(gap, 0.0)
+
+    def test_default_peg_is_short_and_robust(self):
+        self.assertEqual(default_calibration().H_peg, 12)
+        for H in (8, 12, 20, 40):
+            model = build_model(replace(default_calibration(), H_peg=H))
+            path = _scaled_a(model, T=80)
+            failed = [c for c in evaluate_scenario_a(model, path, horizon=40) if not c.ok]
+            self.assertFalse(failed, msg=f"H={H}: " + "; ".join(c.detail for c in failed))
 
 
 if __name__ == "__main__":

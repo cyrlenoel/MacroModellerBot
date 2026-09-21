@@ -33,16 +33,17 @@ class Calibration:
 
     # --- Preferences / nominal block [PROVISIONAL] ---------------------------
     beta: float = 0.995  # ~2% annual real rate
-    sigma: float = 1.0  # inverse EIS of savers
-    h_s: float = 0.50  # external habit, savers
-    kappa: float = 0.015  # NKPC slope (quarterly inflation, percent on percent gap)
+    sigma: float = 6.0  # inverse EIS. Low EIS: MTM dominates short-rate substitution
+    h_s: float = 0.40  # partial adjustment of saver consumption
+    kappa: float = 0.004  # NKPC slope. Flat so a finite peg is not a Fisher spiral
     iota: float = 0.30  # inflation indexation weight
     phi_pi: float = 1.50  # Taylor, same units for i and pi
     phi_y: float = 0.125  # Taylor output weight, annualised-rate convention
-    rho_i: float = 0.80  # Bank Rate smoothing
+    rho_i: float = 0.86  # Bank Rate smoothing
+    psi_nfa: float = 0.08  # Taylor loading on E nfa (SOE closure; inside i^TR)
 
     # --- Term structure and mortgage pass-through [PROVISIONAL except lambda] -
-    rho_tp: float = 0.93  # illustrative persistence of the TP scenario
+    rho_tp: float = 0.90  # illustrative persistence of the TP scenario
     rho_nu: float = 0.75  # illustrative persistence of short-rate path news
     omega_S: float = 0.30  # weight of Bank Rate in the new-advances rate
     omega_L: float = 0.70  # weight of the long rate in the new-advances rate
@@ -50,21 +51,21 @@ class Calibration:
     omega_f_L: float = 0.65  # firm discount, long real rate
 
     # --- HANK-lite budgets [PROVISIONAL] -------------------------------------
-    mu_ds: float = 16.0  # borrower cashflow: percent cons. per qp of stock rate
-    alpha_y: float = 0.10  # borrower income channel
-    mu_coll: float = 0.40  # new-borrowing / LTV channel (scaled by lambda_q)
+    mu_ds: float = 15.0  # borrower cashflow: percent cons. per qp of stock rate
+    alpha_y: float = 0.15  # borrower income channel
+    mu_coll: float = 0.10  # new-borrowing / LTV channel (scaled by lambda_q)
     omega_cs: float = 0.62  # saver share of aggregate consumption
     omega_cb: float = 0.38  # borrower share of aggregate consumption
-    carry: float = 1.2  # saver duration carry, percent of Cs per qp of TP
-    mtm: float = -0.8  # saver MTM, percent of Cs per qp TP change (negative)
-    fisc_coef: float = 0.30  # saver Cs percent per pp-of-GDP net domestic coupon
-    theta_dom: float = 0.70  # domestic share of gilt coupons [PROVISIONAL]
+    psi_tp: float = 2.0  # saver MTM: percent of Cs per qp of TP (positive cuts Cs)
+    psi_y_cs: float = 0.10  # saver income channel from aggregate output
+    psi_ib: float = 0.02  # small coupon pass-through; dominated by psi_tp
+    psi_tau: float = 0.12  # saver consumption drag from the tax rule
 
     # --- Housing and capital [PROVISIONAL] -----------------------------------
-    kappa_c: float = 0.16  # housing Phillips loading on borrower consumption
-    phi_h: float = 0.70  # housing Phillips loading on real new-mortgage rate
-    kappa_H: float = 0.04  # housing Phillips loading on the housing stock
-    kappa_level: float = 0.03  # slow anchor of the house-price level
+    kappa_c: float = 0.055  # housing Phillips loading on borrower consumption
+    phi_h: float = 0.75  # housing Phillips loading on real new-mortgage rate
+    kappa_H: float = 0.03  # housing Phillips loading on the housing stock
+    kappa_level: float = 0.05  # slow anchor of the house-price level
     phi_q: float = 0.90  # q-theory semi-elasticity on the firm real rate
     psi_k: float = 6.0  # investment adjustment (I = Q / psi_k)
     psi_h: float = 3.0  # housing investment (HI = P^h / psi_h)
@@ -96,7 +97,7 @@ class Calibration:
     rho_fx: float = 0.75
 
     # Scenario design (not structural parameters)
-    H_peg: int = 40  # quarters of anticipated Bank Rate peg under (a)
+    H_peg: int = 12  # quarters of anticipated Bank Rate peg under scenario (a)
     T: int = 220  # perfect-foresight horizon
     irf_horizon: int = 40
     target_rl_qp: float = 0.25  # 100 annualised bp
