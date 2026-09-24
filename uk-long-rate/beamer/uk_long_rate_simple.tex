@@ -1,0 +1,194 @@
+% Plain-English seminar slides for a general audience.
+% Same theme and figure path as uk_long_rate_seminar.tex.
+% The full deck is left unchanged.
+%
+% Compile from this directory:
+%   pdflatex uk_long_rate_simple.tex
+%   latexmk -pdf uk_long_rate_simple.tex
+\documentclass[11pt,aspectratio=169]{beamer}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize items}[circle]
+\setbeamerfont{footnote}{size=\tiny}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{array}
+
+\newcommand{\irfdir}{../output/slides/}
+\graphicspath{{\irfdir}}
+
+\title[Long-term UK borrowing costs]{When long-term UK borrowing costs rise}
+\subtitle{And Bank Rate stays put}
+\author[UK long-rate]{A short guide to the UK long-rate model}
+\institute[MacroModellerBot]{\texttt{uk-long-rate/} in MacroModellerBot}
+\date{September 2026}
+
+\begin{document}
+
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+\begin{frame}{The question}
+  What happens when long-term UK borrowing costs rise,
+  while Bank Rate stays put?
+  \vspace{0.6em}
+  \begin{itemize}
+    \item Long-term rates are what mortgages, firms, and the government
+          pay to borrow for years, not the overnight policy rate.
+    \item They can rise because investors demand extra compensation
+          for holding long debt, even if the Bank does not change
+          Bank Rate.
+    \item This talk looks at that case: a one-off rise of 100 basis
+          points in long rates, with Bank Rate held on its baseline
+          path for three years.
+    \item Every result below is that experiment, measured against a
+          baseline in which the rise does not happen.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{How it spreads}
+  \textbf{In the model}
+  \begin{itemize}
+    \item \textbf{Mortgages.} Most deals are fixed. The higher rate
+          bites as those deals roll off, not all at once.
+    \item \textbf{House prices.} Dearer new mortgages pull house prices
+          down, which weakens borrowers who rely on the house as
+          collateral.
+    \item \textbf{Business investment.} A higher long-term cost of
+          capital leads firms to invest less.
+    \item \textbf{The government interest bill.} New and refinanced
+          gilts cost more. Part of the stock is index-linked, so the
+          bill does not jump immediately.
+    \item \textbf{Sterling.} With Bank Rate held fixed, the pound
+          strengthens in this experiment.
+  \end{itemize}
+  \vspace{0.35em}
+  \textbf{Described, but not modelled}
+  \begin{itemize}
+    \item Pension-fund (LDI) stress, as in September 2022.
+    \item A sovereign-risk shock, in which gilt worries also hit
+          the pound.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Why timing matters}
+  \begin{itemize}
+    \item Only about 9\% of the mortgage stock reprices each quarter.
+          That share is $\lambda_q = 0.09$.
+    \item A borrower whose fix has years left does not pay the new
+          rate yet. Someone remortgaging this quarter does.
+    \item So the average mortgage rate on the whole stock climbs
+          slowly, even when the rate on new loans jumps.
+    \item The pressure on household spending therefore builds over
+          several quarters, rather than arriving in one month.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{What the model says}
+  \begin{center}
+    \includegraphics[width=\textwidth,height=0.42\textheight,keepaspectratio]%
+      {\irfdir a_macro.pdf}
+  \end{center}
+  \vspace{-0.15em}
+  {\scriptsize
+  Response to a one-off $+100$~bp rise in long rates, measured against
+  a baseline without it.}
+  \begin{itemize}
+    \item Output is 0.55\% lower than it would otherwise be
+          (trough at quarter 4).
+    \item House prices are 2.6\% lower than otherwise (quarter 8).
+    \item The government interest bill is 0.20~pp of GDP higher than
+          otherwise (peak at quarter 24).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Who is hit}
+  \begin{center}
+    \includegraphics[width=\textwidth,height=0.34\textheight,keepaspectratio]%
+      {\irfdir a_consumption_mortgage.pdf}
+  \end{center}
+  \vspace{-0.2em}
+  {\scriptsize
+  Same one-off $+100$~bp rise in long rates, against a baseline
+  without it.}
+  \begin{itemize}
+    \item Savers cut back first: 0.77\% below baseline at quarter 3.
+    \item Borrowers cut back more, and later: 1.04\% below baseline
+          at quarter 9, as their mortgages reprice.
+    \item That lag is the 9\% quarterly reset. The rate on new loans
+          jumps immediately; the rate on the whole stock does not.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{If markets instead expect Bank Rate to rise}
+  \begin{center}
+    \includegraphics[width=\textwidth,height=0.32\textheight,keepaspectratio]%
+      {\irfdir a_vs_b.pdf}
+  \end{center}
+  \vspace{-0.15em}
+  {\scriptsize
+  Both lines are a one-off $+100$~bp rise in long rates, against a
+  baseline without it. Only the solid line keeps Bank Rate on hold.}
+  \begin{itemize}
+    \item If the long rate rises because Bank Rate itself is expected
+          to rise, Bank Rate is about 315~bp higher than otherwise
+          on impact, and about 560~bp higher at quarter 4.
+    \item Output is then 1.178\% lower than otherwise (quarter 5),
+          and house prices 6.551\% lower (quarter 7).
+    \item That is a deeper hit than when Bank Rate stays put
+          (0.55\% and 2.6\%).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Caveats}
+  \begin{itemize}
+    \item The numbers come from a calibrated model. They are not
+          estimates fitted to UK data.
+    \item A few settings are provisional choices, including how
+          strongly inflation responds and how house prices are
+          determined.
+    \item The sovereign-risk scenario is not yet modelled.
+    \item LDI stress is not modelled. The September 2022 gilt spiral
+          is a separate, non-linear event.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Next steps}
+  \begin{itemize}
+    \item Estimate the effects directly from high-frequency surprises
+          in gilt yields, using local projections.
+    \item Include a state-dependent version, so the effect can differ
+          when the gilt market is stressed.
+    \item Then estimate this model on UK data, with a wide prior on
+          how strongly inflation responds.
+    \item The sovereign-risk scenario is still to be built.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Appendix: three fixed settings}
+  \begin{itemize}
+    \item About 9\% of mortgages reprice each quarter
+          ($\lambda_q = 0.09$).
+    \item A quarter of the gilt stock is index-linked (share 0.25).
+    \item Average gilt duration is 9.1 years, so the government's
+          coupon book refixes slowly.
+  \end{itemize}
+  \vspace{0.4em}
+  The rate on the whole mortgage stock is mostly last quarter's rate:
+  \[
+    R^{\mathrm{stock}}_{t}
+      = (1-\lambda_q)\, R^{\mathrm{stock}}_{t-1}
+      + \lambda_q\, R^{\mathrm{new}}_{t}.
+  \]
+  {\scriptsize With $\lambda_q = 0.09$, nine tenths of the stock keeps
+  the old rate each quarter.}
+\end{frame}
+
+\end{document}
