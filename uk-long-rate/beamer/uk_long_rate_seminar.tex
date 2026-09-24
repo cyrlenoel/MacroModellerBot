@@ -5,8 +5,10 @@
 %   pdflatex uk_long_rate_seminar.tex
 %   tectonic uk_long_rate_seminar.tex
 %
-% Figures in figures/ are plotted from the CSVs in ../output/
-% (Python QZ paths of dynare/uk_long_rate.mod). No estimated IRFs.
+% Figures are the PNGs already in ../output/ (Python QZ paths).
+% A later PR adds ../output/slides/ with cleaned PDF/PNG versions
+% (labels, H=12 on (a), a ``calibrated, not estimated'' tag).
+% Change \irfdir only; do not search a local figures/ folder.
 \documentclass[11pt,aspectratio=169]{beamer}
 
 \usetheme{Madrid}
@@ -22,7 +24,9 @@
 \usepackage{graphicx}
 \usepackage{array}
 
-\graphicspath{{figures/}{../output/}}
+% Single swap point for slide-ready figures: ../output/slides/
+\newcommand{\irfdir}{../output/}
+\graphicspath{{\irfdir}}
 
 \newcommand{\Calibrated}{%
   \par\vspace{0.2em}%
@@ -81,8 +85,8 @@
     \item \textbf{(b) path news.}
           News about future short rates. Bank Rate is not pegged.
     \item \textbf{(c) sovereign.}
-          A fiscal / sovereign gilt risk premium, often with sterling
-          moving the other way.
+          A fiscal / sovereign gilt risk premium.
+          \textbf{Not yet modelled.}
   \end{itemize}
 \end{frame}
 
@@ -281,10 +285,11 @@
         \item \textbf{(a) sterilised term premium:}
               a relative-rate reading.
               Sterling tends to \textbf{appreciate}.
-        \item \textbf{(c) sovereign:}
-              gilt--FX risk. The same long-rate
+        \item \textbf{(c) sovereign} (review only):
+              gilt--FX risk, so the same long-rate
               rise co-moves with a
               \textbf{depreciation}.
+              Not yet modelled here.
       \end{itemize}
       {\scriptsize Do not hard-wire ``higher long rates
       $\Rightarrow$ a stronger pound''
@@ -371,8 +376,7 @@
 
   \textbf{(b) path news} shifts $\nu_t$ inside the rule
   ($\rho_\nu=0.75$), not sterilised, scaled to the same $+100$~bp long rate.
-  \textbf{(c) sovereign} is the UIP premium $\rho^{fx}_t$
-  (\texttt{e\_rhofx} in the \texttt{.mod}). It is not fired.}
+  \textbf{(c) sovereign} is not yet modelled.}
 \end{frame}
 
 %----------------------------------------------------------------------
@@ -450,10 +454,8 @@
     \item Under \textbf{(a) sterilised term premium}, $i_{t}=0$ on the peg
           while inflation falls, so the real short rate rises and
           sterling appreciates ($rer$ falls). That is the review's sign
-          for (a).
-    \item \textbf{(c) sovereign} enters as $\rho^{fx}_{t}$ and can flip
-          the sign. The shock is in the \texttt{.mod} and is not fired,
-          so there is no (c) IRF in \texttt{output/}.
+          for (a). On this path $rer$ is $-1.875\%$ on impact
+          (\texttt{irf\_tp\_sterilised.csv}).
     \item A passive tax rule $\tau_{t}=\varphi_{dg}\widetilde{B}^{g}_{t-1}$
           ($\varphi_{dg}=0.06$) closes the fiscal loop.
           $\varphi_{\pi}=1.5$, $\beta=0.995$.
@@ -495,35 +497,24 @@
 %======================================================================
 \section{Results}
 %----------------------------------------------------------------------
-\begin{frame}{(a) sterilised term premium: activity, houses, the bill}
+\begin{frame}{(a) sterilised term premium}
   \begin{center}
-    \includegraphics[width=\textwidth,height=0.42\textheight,keepaspectratio]%
-      {irf_a_y_ph_ib.png}
+    \includegraphics[width=\textwidth,height=0.60\textheight,keepaspectratio]%
+      {\irfdir irf_a_tp_sterilised.png}
   \end{center}
-  \vspace{-0.35em}
+  \vspace{-0.15em}
   {\scriptsize
-  $+100$~bp on $R^{L}$, peg $H=12$.
-  From \texttt{output/success\_checks.txt}
-  (CSV \texttt{irf\_tp\_sterilised.csv}):}
-  \begin{itemize}
-    \item Output: impact $-0.391\%$, trough $-0.545\%$ in quarter~4.
-    \item House prices: impact $-0.752\%$, trough $-2.597\%$ in quarter~8.
-    \item Interest bill: impact $-0.0340$~pp of GDP, then a peak of
-          $+0.2017$~pp in quarter~24.
-          A full immediate refix of the conventional stock would be
-          $0.75$~pp. The early dip is the index-linked uplift.
-  \end{itemize}
+  Output trough $-0.55\%$ in quarter~4.
+  House prices trough $-2.6\%$ in quarter~8.
+  Interest bill peaks at $+0.20$~pp of GDP in quarter~24.}
   \Calibrated
 \end{frame}
 
 %----------------------------------------------------------------------
 \begin{frame}{(a) sterilised term premium: who cuts consumption}
-  \begin{center}
-    \includegraphics[width=\textwidth,height=0.44\textheight,keepaspectratio]%
-      {irf_a_consumption.png}
-  \end{center}
-  \vspace{-0.3em}
-  {\scriptsize Same path. Savers in blue, borrowers in red on the left panel.}
+  The consumption and mortgage panels are on the previous figure
+  (\texttt{irf\_a\_tp\_sterilised.png}).
+  Same $+100$~bp path, $H=12$.
   \begin{itemize}
     \item Savers do not raise consumption:
           $C^{s}\in[-0.768\%,-0.081\%]$ over the 40 quarters.
@@ -533,17 +524,29 @@
     \item The lag is $\lambda_{q}$. New-loan $R^{m}$ jumps 70~bp on impact;
           the stock rate only 6.3~bp, and peaks at quarter~10,
           one quarter after the borrower trough.
+    \item Output impact is $-0.391\%$ (trough $-0.55\%$ in quarter~4).
+          House prices impact $-0.752\%$ (trough $-2.6\%$ in quarter~8).
+          The interest bill dips on impact ($-0.034$~pp of GDP) and
+          peaks at $+0.20$~pp in quarter~24.
   \end{itemize}
+  {\scriptsize Checked against \texttt{output/success\_checks.txt}
+  and \texttt{irf\_tp\_sterilised.csv}.
+  The check prints output $-0.545\%$ and house prices $-2.597\%$;
+  the headlines above are those troughs at two and one decimals.}
   \Calibrated
 \end{frame}
 
 %----------------------------------------------------------------------
 \begin{frame}{(a) sterilised term premium against (b) path news}
   \begin{center}
-    \includegraphics[width=\textwidth,height=0.34\textheight,keepaspectratio]%
-      {irf_a_vs_b.png}
+    \includegraphics[width=\textwidth,height=0.26\textheight,keepaspectratio]%
+      {\irfdir irf_a_vs_b_y_ph.png}
   \end{center}
-  \vspace{-0.35em}
+  \vspace{-0.15em}
+  {\scriptsize
+  The file labels the dashed line ``short-rate news''.
+  That line is \textbf{(b) path news}
+  until the slide-ready figures rename it.}
   \begin{center}
   {\scriptsize
   \setlength{\tabcolsep}{5pt}
@@ -553,29 +556,27 @@
     \midrule
     $R^{L}$ on impact & $+100$~bp & $+100$~bp \\
     Bank Rate on impact & pegged at 0 ($H=12$) & $+315$~bp \\
-    Output trough & $-0.545\%$ (q4) & $-1.178\%$ (q5) \\
-    House-price trough & $-2.597\%$ (q8) & $-6.551\%$ (q7) \\
+    Output trough & $-0.55\%$ (q4) & $-1.178\%$ (q5) \\
+    House-price trough & $-2.6\%$ (q8) & $-6.551\%$ (q7) \\
     \bottomrule
   \end{tabular}
   }
   \end{center}
-  \vspace{0.05em}
+  \vspace{0.1em}
   {\scriptsize
   (b) from \texttt{irf\_short\_rate\_news.csv}.
-  The expectations-hypothesis weight on the current short rate is only
-  $1/(4D)$, so the same 100~bp long-rate move needs a much larger
-  Bank Rate path (peak $+560$~bp in quarter~4).
+  Weight $1/(4D)$ on the current short rate means this 100~bp long-rate
+  move needs a much larger Bank Rate path (peak $+560$~bp in quarter~4).
   Under (b), $R^{L}$ later dips to $-11.8$~bp (quarter~16);
-  under (a) it stays positive (minimum $+2.35$~bp).
-  \textbf{(c) sovereign} is not on this figure.}
+  under (a) it stays positive (minimum $+2.35$~bp).}
   \Calibrated
 \end{frame}
 
 %----------------------------------------------------------------------
 \begin{frame}{(a) sterilised term premium: interest-bill split}
   \begin{center}
-    \includegraphics[width=0.90\textwidth,height=0.40\textheight,keepaspectratio]%
-      {irf_a_ib_split.png}
+    \includegraphics[width=0.88\textwidth,height=0.34\textheight,keepaspectratio]%
+      {\irfdir irf_a_ib_decomposition.png}
   \end{center}
   \vspace{-0.35em}
   {\scriptsize
@@ -588,7 +589,8 @@
     \item Nominal coupon: rises immediately, but only at rate
           $1/(4D)$. Peak $+0.1585$~pp in quarter~19.
           $R^{\mathrm{eff}}$ itself peaks in quarter~17.
-    \item Sum: impact $-0.0340$~pp, peak $+0.2017$~pp in quarter~24.
+    \item Sum: impact $-0.034$~pp, peak $+0.20$~pp of GDP in quarter~24
+          (the check prints $+0.2017$).
           Coupon half-life is about 25 quarters; $\rho_{TP}=0.90$
           pulls the peak forward of that half-life.
   \end{itemize}
@@ -612,6 +614,7 @@
           house-price index. Horizons 0--12 in the stub.
           Reference already in the code: Cesa-Bianchi, Thwaites and
           Vicondoa (2020).
+    \item \textbf{(c) sovereign} is \textbf{not yet modelled}.
     \item \textbf{Next estimation step:} a linear Jord\`a baseline on
           that residualised surprise, then a state-dependent / non-linear
           variant \`a la David, Giacomini, Jiao and Wang.
@@ -661,7 +664,8 @@
           Savers do not raise consumption.
     \item \textbf{(b) path news}, scaled to the same long-rate impact,
           is a much larger short-rate path and a deeper contraction.
-          \textbf{(c) sovereign} is coded and not fired.
+          On the comparison figure that path is labelled ``short-rate news''.
+          \textbf{(c) sovereign} is not yet modelled.
     \item These are not estimates. $\kappa$ and the housing parameters
           are provisional. Next: residualised gilt local projections,
           including a state-dependent variant, then Bayesian estimation
@@ -708,29 +712,10 @@
 \end{frame}
 
 %----------------------------------------------------------------------
-\begin{frame}{Appendix: (a) sterilised term premium, prices and sterling}
-  \begin{center}
-    \includegraphics[width=\textwidth,height=0.50\textheight,keepaspectratio]%
-      {irf_a_open.png}
-  \end{center}
-  \vspace{-0.25em}
-  {\scriptsize
-  From \texttt{irf\_tp\_sterilised.csv}.
-  Real exchange rate on impact: $-1.875\%$
-  (a fall in $rer$ is an appreciation), the sign the review assigns to
-  \textbf{(a) sterilised term premium}.
-  Inflation: $-26.4$~bp annualised on impact, trough $-34.9$~bp in
-  quarter~3. Business investment falls $0.505\%$ on impact, which is
-  also its trough on this path.
-  \textbf{(c) sovereign} is not shown.}
-  \Calibrated
-\end{frame}
-
-%----------------------------------------------------------------------
 \begin{frame}{Appendix: peg length is not doing the work}
   \begin{center}
-    \includegraphics[width=\textwidth,height=0.34\textheight,keepaspectratio]%
-      {irf_peg_robustness.png}
+    \includegraphics[width=\textwidth,height=0.36\textheight,keepaspectratio]%
+      {\irfdir irf_peg_robustness.png}
   \end{center}
   \vspace{-0.35em}
   {\scriptsize
@@ -749,9 +734,11 @@
 
   \vspace{0.2em}
   Only $H=12$ is \textbf{(a) sterilised term premium}.
+  The figure labels the other pegs as robustness.
   Rounded from \texttt{output/irf\_peg\_robustness.csv}.
-  $H=40$ is robustness. $\kappa=0.004$ and $\psi_{\mathrm{nfa}}$ are what
-  keep $R^{L}$ from crossing zero on a short peg; both are provisional.}
+  Results slides round the $H=12$ row to output $-0.55\%$,
+  house prices $-2.6\%$, and an interest bill of $+0.20$~pp.
+  $\kappa=0.004$ and $\psi_{\mathrm{nfa}}$ are provisional.}
   \Calibrated
 \end{frame}
 
@@ -792,12 +779,9 @@
     \item One mortgage hazard. Savers on a level rule. Flat provisional
           Phillips curve. Housing user-cost curve with provisional loadings.
   \end{itemize}
-  \textbf{Coded and not fired}
+  \textbf{Not yet modelled}
   \begin{itemize}
-    \item \textbf{(c) sovereign} ($\rho^{fx}$).
-          Cost-push, government spending, foreign demand and the
-          mortgage wedge $\zeta$ are AR shocks in the \texttt{.mod},
-          unused in the (a)/(b) paths.
+    \item \textbf{(c) sovereign.}
   \end{itemize}
   \textbf{Not in the MVP}
   \begin{itemize}
