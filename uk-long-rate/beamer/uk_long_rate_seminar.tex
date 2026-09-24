@@ -5,10 +5,8 @@
 %   pdflatex uk_long_rate_seminar.tex
 %   tectonic uk_long_rate_seminar.tex
 %
-% Figures are the PNGs already in ../output/ (Python QZ paths).
-% A later PR adds ../output/slides/ with cleaned PDF/PNG versions
-% (labels, H=12 on (a), a ``calibrated, not estimated'' tag).
-% Change \irfdir only; do not search a local figures/ folder.
+% Figures are the slide-ready PDFs in ../output/slides/
+% (src/plot_slides.py). Change \irfdir only.
 \documentclass[11pt,aspectratio=169]{beamer}
 
 \usetheme{Madrid}
@@ -24,8 +22,7 @@
 \usepackage{graphicx}
 \usepackage{array}
 
-% Single swap point for slide-ready figures: ../output/slides/
-\newcommand{\irfdir}{../output/}
+\newcommand{\irfdir}{../output/slides/}
 \graphicspath{{\irfdir}}
 
 \newcommand{\Calibrated}{%
@@ -343,39 +340,34 @@
 
 %----------------------------------------------------------------------
 \begin{frame}{Three shocks, and how (a) is sterilised}
-  \textbf{(a) sterilised term premium.}
-  $TP_t$ is an AR(1) with $\rho_{TP}=0.90$ (illustrative, not held fixed).
-  The innovation is scaled so $R^L$ rises 100~bp on impact
-  (about $0.252$ quarterly percent;
-  \texttt{success\_checks.txt}).
-  \vspace{0.25em}
-
+  \begin{center}
+    \includegraphics[width=\textwidth,height=0.36\textheight,keepaspectratio]%
+      {\irfdir bank_rate_sterilisation.pdf}
+  \end{center}
+  \vspace{-0.25em}
+  {\scriptsize
+  \textbf{(a) sterilised term premium:} anticipated Bank Rate peg,
+  $H=12$ quarters
+  (\texttt{H\_peg} in \texttt{src/calibration.py},
+  \texttt{dynare/params\_calibration.m},
+  \texttt{dynare/run\_uk\_long\_rate.m}).
+  The Taylor rule stays in the model. For the first $H$ quarters
+  $\varepsilon^{\mathrm{ster}}_t=-i^{TR}_t$, so}
   {\footnotesize
-  Anticipated Bank Rate peg. The Taylor rule stays in the model.
-  For the first $H$ quarters the monetary residual is set to
-  $\varepsilon^{\mathrm{ster}}_t=-i^{TR}_t$, and $i^{\mathrm{path}}_t=0$, so}
   \begin{align*}
     i_t
       &= \rho_i i_{t-1}
-       + (1-\rho_i)\bigl(\varphi_\pi \pi_t + \tfrac14\varphi_y Y_t\bigr) \\
-      &\quad
+       + (1-\rho_i)\bigl(\varphi_\pi \pi_t + \tfrac14\varphi_y Y_t\bigr)
        + \psi_{\mathrm{nfa}} E_t nfa_{t+1}
-       + \nu_t
-       + \varepsilon^{\mathrm{ster}}_t
+       + \nu_t + \varepsilon^{\mathrm{ster}}_t
        = 0.
   \end{align*}
-  {\footnotesize
+  }
+  \vspace{-0.6em}
+  {\scriptsize
   $\varphi_y=0.125$ is the annual convention, hence the factor $1/4$.
-  Residuals are anticipated. The rule resumes after $H$.
-  A permanent peg is not used: inflation would be undetermined.
-  \textbf{Horizon $H=12$ quarters}
-  (\texttt{H\_peg} in \texttt{src/calibration.py};
-  \texttt{p.H\_peg = 12} in \texttt{dynare/params\_calibration.m};
-  \texttt{H = 12} in \texttt{dynare/run\_uk\_long\_rate.m}).
-  The figure window is 40 quarters, so the rule is back on for the last 28.
-
-  \textbf{(b) path news} shifts $\nu_t$ inside the rule
-  ($\rho_\nu=0.75$), not sterilised, scaled to the same $+100$~bp long rate.
+  Residuals are anticipated; the rule resumes after quarter~12.
+  \textbf{(b) path news} is not sterilised.
   \textbf{(c) sovereign} is not yet modelled.}
 \end{frame}
 
@@ -499,8 +491,8 @@
 %----------------------------------------------------------------------
 \begin{frame}{(a) sterilised term premium}
   \begin{center}
-    \includegraphics[width=\textwidth,height=0.60\textheight,keepaspectratio]%
-      {\irfdir irf_a_tp_sterilised.png}
+    \includegraphics[width=\textwidth,height=0.62\textheight,keepaspectratio]%
+      {\irfdir a_macro.pdf}
   \end{center}
   \vspace{-0.15em}
   {\scriptsize
@@ -512,41 +504,34 @@
 
 %----------------------------------------------------------------------
 \begin{frame}{(a) sterilised term premium: who cuts consumption}
-  The consumption and mortgage panels are on the previous figure
-  (\texttt{irf\_a\_tp\_sterilised.png}).
-  Same $+100$~bp path, $H=12$.
+  \begin{center}
+    \includegraphics[width=\textwidth,height=0.38\textheight,keepaspectratio]%
+      {\irfdir a_consumption_mortgage.pdf}
+  \end{center}
+  \vspace{-0.2em}
   \begin{itemize}
-    \item Savers do not raise consumption:
-          $C^{s}\in[-0.768\%,-0.081\%]$ over the 40 quarters.
-    \item Borrowers fall at least as much:
-          $C^{b}\in[-1.038\%,-0.227\%]$,
-          trough $-1.038\%$ in quarter~9.
-    \item The lag is $\lambda_{q}$. New-loan $R^{m}$ jumps 70~bp on impact;
-          the stock rate only 6.3~bp, and peaks at quarter~10,
-          one quarter after the borrower trough.
-    \item Output impact is $-0.391\%$ (trough $-0.55\%$ in quarter~4).
-          House prices impact $-0.752\%$ (trough $-2.6\%$ in quarter~8).
-          The interest bill dips on impact ($-0.034$~pp of GDP) and
-          peaks at $+0.20$~pp in quarter~24.
+    \item Savers' consumption falls first: trough $-0.77\%$ in quarter~3.
+          It does not rise later
+          ($C^{s}$ stays in $[-0.77\%,-0.08\%]$).
+    \item Borrowers' consumption falls more, and later: trough $-1.04\%$
+          in quarter~9.
+    \item Only about 9\% of the mortgage stock reprices each quarter
+          ($\lambda_q=0.09$). New-loan $R^{m}$ jumps 70~bp on impact;
+          the stock rate only 6.3~bp, and peaks in quarter~10,
+          next to the borrower trough.
   \end{itemize}
-  {\scriptsize Checked against \texttt{output/success\_checks.txt}
-  and \texttt{irf\_tp\_sterilised.csv}.
-  The check prints output $-0.545\%$ and house prices $-2.597\%$;
-  the headlines above are those troughs at two and one decimals.}
+  {\scriptsize Exact troughs in \texttt{success\_checks.txt}:
+  $C^{s}$ $-0.768\%$ at q3, $C^{b}$ $-1.038\%$ at q9.}
   \Calibrated
 \end{frame}
 
 %----------------------------------------------------------------------
 \begin{frame}{(a) sterilised term premium against (b) path news}
   \begin{center}
-    \includegraphics[width=\textwidth,height=0.26\textheight,keepaspectratio]%
-      {\irfdir irf_a_vs_b_y_ph.png}
+    \includegraphics[width=\textwidth,height=0.30\textheight,keepaspectratio]%
+      {\irfdir a_vs_b.pdf}
   \end{center}
   \vspace{-0.15em}
-  {\scriptsize
-  The file labels the dashed line ``short-rate news''.
-  That line is \textbf{(b) path news}
-  until the slide-ready figures rename it.}
   \begin{center}
   {\scriptsize
   \setlength{\tabcolsep}{5pt}
@@ -562,21 +547,19 @@
   \end{tabular}
   }
   \end{center}
-  \vspace{0.1em}
   {\scriptsize
-  (b) from \texttt{irf\_short\_rate\_news.csv}.
-  Weight $1/(4D)$ on the current short rate means this 100~bp long-rate
-  move needs a much larger Bank Rate path (peak $+560$~bp in quarter~4).
-  Under (b), $R^{L}$ later dips to $-11.8$~bp (quarter~16);
-  under (a) it stays positive (minimum $+2.35$~bp).}
+  (b), from \texttt{irf\_short\_rate\_news.csv}: weight $1/(4D)$ on the
+  current short rate, so Bank Rate peaks at $+560$~bp in quarter~4.
+  $R^{L}$ later dips to $-11.8$~bp in quarter~16 under (b) and stays
+  positive under (a) (minimum $+2.35$~bp).}
   \Calibrated
 \end{frame}
 
 %----------------------------------------------------------------------
 \begin{frame}{(a) sterilised term premium: interest-bill split}
   \begin{center}
-    \includegraphics[width=0.88\textwidth,height=0.34\textheight,keepaspectratio]%
-      {\irfdir irf_a_ib_decomposition.png}
+    \includegraphics[width=\textwidth,height=0.32\textheight,keepaspectratio]%
+      {\irfdir ib_decomposition.pdf}
   \end{center}
   \vspace{-0.35em}
   {\scriptsize
@@ -658,13 +641,15 @@
           LDI / September 2022 stays a boxed non-linear stress effect.
     \item In the \textbf{calibrated} twin, a $+100$~bp
           \textbf{(a) sterilised term premium} ($H=12$) lowers output
-          and house prices and, after an index-linked dip, raises the
-          interest bill. Borrowers cut consumption by at least as much
-          as savers, with a lag of $\lambda_{q}=0.09$.
-          Savers do not raise consumption.
+          (trough $-0.55\%$ in quarter~4) and house prices
+          (trough $-2.6\%$ in quarter~8). The interest bill peaks at
+          $+0.20$~pp of GDP in quarter~24, after an index-linked dip.
+          Savers' consumption falls first ($-0.77\%$ in quarter~3) and
+          does not rise. Borrowers fall more, and later
+          ($-1.04\%$ in quarter~9), because only about 9\% of the
+          mortgage stock reprices each quarter ($\lambda_q=0.09$).
     \item \textbf{(b) path news}, scaled to the same long-rate impact,
           is a much larger short-rate path and a deeper contraction.
-          On the comparison figure that path is labelled ``short-rate news''.
           \textbf{(c) sovereign} is not yet modelled.
     \item These are not estimates. $\kappa$ and the housing parameters
           are provisional. Next: residualised gilt local projections,
@@ -715,7 +700,7 @@
 \begin{frame}{Appendix: peg length is not doing the work}
   \begin{center}
     \includegraphics[width=\textwidth,height=0.36\textheight,keepaspectratio]%
-      {\irfdir irf_peg_robustness.png}
+      {\irfdir peg_robustness.pdf}
   \end{center}
   \vspace{-0.35em}
   {\scriptsize
