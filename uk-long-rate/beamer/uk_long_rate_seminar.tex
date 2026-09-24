@@ -1,0 +1,843 @@
+% Higher UK long-term interest rates --- seminar slides
+% Calibrated small-open-economy NK twin in uk-long-rate/
+%
+% Compile from this directory:
+%   pdflatex uk_long_rate_seminar.tex
+%   tectonic uk_long_rate_seminar.tex
+%
+% Figures in figures/ are plotted from the CSVs in ../output/
+% (Python QZ paths of dynare/uk_long_rate.mod). No estimated IRFs.
+\documentclass[11pt,aspectratio=169]{beamer}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize items}[circle]
+\setbeamerfont{footnote}{size=\tiny}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{array}
+
+\graphicspath{{figures/}{../output/}}
+
+\newcommand{\Calibrated}{%
+  \par\vspace{0.2em}%
+  {\footnotesize\textbf{Calibrated model.}
+  Bayesian estimation has not been run.
+  $\kappa$ and the housing parameters are provisional.}%
+}
+
+\title[UK long rates]{Higher UK Long-Term Interest Rates}
+\subtitle{\texorpdfstring{Small-open-economy NK with a HANK-lite mortgage block\\
+{\normalsize Seminar notes on the \texttt{uk-long-rate} MVP}}{UK long-rate seminar notes}}
+\author[Prototype slides]{\texorpdfstring{Open-source notes on the signed sketch and the calibrated twin\\
+{\small not a Bayesian estimate}}{Open-source prototype slides (calibrated, not estimated)}}
+\institute[MacroModellerBot]{\texttt{uk-long-rate/} in MacroModellerBot}
+\date{September 2026}
+
+\begin{document}
+
+%----------------------------------------------------------------------
+\begin{frame}[plain]
+  \titlepage
+  \vspace{-1.1em}
+  \begin{center}
+    {\footnotesize
+    Sources: signed channels review; model sketch v3 (21~Sep 2026);\\
+    Dynare twin \texttt{dynare/uk\_long\_rate.mod} and the Python QZ paths in \texttt{output/}.}
+  \end{center}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Outline}
+  \tableofcontents
+  \vspace{0.6em}
+  {\footnotesize Channels from the signed review first, then the calibrated
+  twin. Every results path below is that twin.
+  Bayesian estimation has not been run.}
+\end{frame}
+
+%======================================================================
+\section{The question}
+%----------------------------------------------------------------------
+\begin{frame}{What we are asking}
+  \begin{block}{Question (signed sketch)}
+    How does an exogenous rise in UK long-term nominal rates transmit
+    to GDP, CPI, house prices, sterling, consumption, investment and
+    the public interest bill, with the short policy-rate path held
+    fixed or allowed to move?
+  \end{block}
+  \vspace{0.2em}
+  Three shocks, kept separate. Illustrative size in the model:
+  a $+100$~bp move in the model 10-year rate.
+  \begin{itemize}
+    \item \textbf{(a) sterilised term premium.}
+          The term premium lifts the long rate. The expected Bank Rate
+          path is held fixed.
+    \item \textbf{(b) path news.}
+          News about future short rates. Bank Rate is not pegged.
+    \item \textbf{(c) sovereign.}
+          A fiscal / sovereign gilt risk premium, often with sterling
+          moving the other way.
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Why ``the 10-year yield'' is not one shock}
+  \begin{itemize}
+    \item A long yield is an expected path of short rates plus a term
+          premium (duration, inflation, liquidity).
+    \item A path-driven rise often co-moves with stronger expected
+          activity or inflation. A term-premium rise --- gilt supply,
+          QE/QT, fiscal credibility, risk-off --- tightens more like a
+          cost of capital
+          (Kaminska, Mumtaz and \v{S}ustek, 2021;
+          Greenwood, Hanson, Stein and Sunderam, 2023).
+    \item High-frequency surprises are not the same object as the
+          gradual 2021--23 repricing, which was partly anticipated and
+          front-loaded into mortgages (Burr and Willems, 2024).
+    \item For the UK, long rates price fixed-rate mortgages (via swaps),
+          the public interest bill, and an open-economy portfolio balance
+          into sterling.
+  \end{itemize}
+  \vspace{0.35em}
+  {\footnotesize Do not treat ``10-year yield up 100~bp'' as interchangeable
+  across \textbf{(a) sterilised term premium}, \textbf{(b) path news}
+  and \textbf{(c) sovereign}.}
+\end{frame}
+
+%======================================================================
+\section{Literature}
+%----------------------------------------------------------------------
+\begin{frame}{Path versus term premium}
+  \begin{itemize}
+    \item \textbf{Comparable UK macro IRFs} for a pure term-premium shock
+          versus a Bank Rate / path shock are sparse
+          (signed review, \S1.1).
+    \item UK \emph{path} peaks are the high-frequency Bank Rate / MPC
+          studies. UK \emph{term-premium} evidence is much better for
+          \emph{yields} (Joyce and Lengyel, SWP~1,097) than for full
+          macro IRFs.
+    \item Kaminska, Mumtaz and \v{S}ustek (SWP~914, 2021; also \emph{JME})
+          is a \textbf{US} FOMC decomposition. Useful for the
+          \emph{shape} of path versus premia responses. Instruments are
+          normalised differently. Not a UK calibration target.
+    \item The review's modelling implication, which this MVP follows:
+          separate \textbf{(a) sterilised term premium},
+          \textbf{(b) path news} and \textbf{(c) sovereign}.
+          Empirically, sterilise (a) by residualising long-end surprises
+          on Bank Rate / short OIS.
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Magnitudes, with the shock labelled}
+  {\scriptsize
+  \setlength{\tabcolsep}{3.5pt}
+  \renewcommand{\arraystretch}{1.12}
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.55cm}>{\raggedright\arraybackslash}p{3.15cm}>{\raggedright\arraybackslash}p{6.35cm}@{}}
+    \toprule
+    Object & Source & Peak / key magnitude \\
+    \midrule
+    Bank Rate / MPC surprise
+      & Cesa-Bianchi, Thwaites and Vicondoa (2020); ranges in Burr and Willems (2024). UK.
+      & GDP roughly $-0.5\%$ to $-1.4\%$; prices $-0.3\%$ to $-1.0\%$; unemployment $\sim +0.5$~pp in some estimates; houses $\sim -4\%$; sterling ERI $\sim +2\%$ to $+7\%$. Per $\approx 1$~pp. \textbf{Path}, not pure term premium. \\
+    Housing share of consumption
+      & Albuquerque, Lazarowicz and Lenney, SWP~\textbf{1,115} (2025). UK.
+      & Housing channel $\approx$ \textbf{one half} of peak transmission to household consumption, among mortgagors. \textbf{Path / rate} shock. \\
+    Gilt supply / QT-sized surprise, 10-year yield
+      & Joyce and Lengyel, SWP~\textbf{1,097} (2024). UK.
+      & $\sim 20$~bp in low stress; $\sim 120$~bp in high stress. Yield impact, not a macro IRF. \textbf{Term premium / gilt supply}. \\
+    Action, expected path, uncertainty
+      & Kaminska, Mumtaz and \v{S}ustek, SWP~\textbf{914} (2021). \textbf{US}.
+      & Action: NK contraction. Path: often expansionary IP. Premia: yields and mortgage rates up, housing down. Shapes only. \\
+    \bottomrule
+  \end{tabular}
+  }
+  \vspace{0.25em}
+  {\scriptsize Condensed from the signed review, \S1.1.
+  Passive QT runoff $\approx$ active sales, pound for pound, in SWP~1,097.}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Mortgage cash flow: 2-year and 5-year fixes}
+  \begin{itemize}
+    \item New UK fixes are priced off sterling swaps, which co-move with
+          gilts. A gilt spike can reprice the \emph{flow} between MPC
+          meetings (Burr and Willems, 2024).
+    \item The \emph{stock} is slow. The share of outstanding mortgages
+          fixed for five years rose from around \textbf{20\% in 2016 to
+          over 50\% in 2022} (Burr and Willems, 2024, fn.~18).
+    \item Over 90\% of \emph{new} mortgages have been fixed-rate since
+          around 2013, with five-year products replacing two-year fixes
+          (Burr and Willems, 2024; MLAR flow evidence).
+    \item Cash-flow peaks should lag the peak in flow mortgage rates,
+          over a \textbf{2--5 year} reset ladder. Anticipation of a
+          dearer refinance can move some spending earlier
+          (Anjum and Herler, 2023, \emph{cited via} Burr and Willems).
+    \item Effective stock rates rose more slowly in 2021--23 than in
+          past cycles because of that fixed share (IMF, 2024).
+  \end{itemize}
+  \vspace{0.15em}
+  {\scriptsize SWP~\textbf{1,158} (Rajan, Rodriguez-Tous and Salgado-Moreno, 2025)
+  studies how term \emph{spreads} shift the supply of short versus long
+  fixes. It is not a source for stock reset shares.}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Housing collateral, alongside the cash-flow channel}
+  \begin{itemize}
+    \item Higher long rates raise the user cost of housing, cut the
+          present value of housing services, and tighten LTVs when
+          prices fall (Mishkin, 2007; IMF WEO, April 2024, Ch.~2).
+    \item BoE staff: a 1~pp \textbf{Bank Rate} hike lowers UK house
+          prices by roughly 4\% on average
+          (Burr and Willems, 2024). That is a \textbf{path} magnitude,
+          not a term-premium IRF.
+    \item SWP~\textbf{1,115}: the housing channel is about half of peak
+          transmission to household consumption, concentrated among
+          mortgagors. In their high-frequency evidence, house prices
+          trough around one year; nominal rents are stable for one to
+          two years, then decline.
+    \item Housing wealth effects on consumption are typically at least
+          as large as equity wealth effects
+          (Case, Quigley and Shiller, 2001). UK MPCs out of wealth
+          are cited at around 5p per \pounds1
+          (Slacalek, 2009, \emph{cited via} Burr and Willems).
+    \item Direct intertemporal substitution looks small next to
+          cash flow, income and wealth
+          (Havranek et al., 2015; Best et al., 2020, for the UK EIS).
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Investment, and corporate credit versus gilt premia}
+  \begin{itemize}
+    \item User cost rises with the real financing rate
+          (Hall and Jorgenson, 1967). Long-lived capital is the usual
+          margin; timing can also respond to short rates
+          (McKay and Wieland, \emph{cited via} Burr and Willems, 2024).
+    \item Gilchrist and Zakraj\v{s}ek (2007): a 1~pp rise in user cost
+          cuts the investment rate by about 50--75~bp in the short run
+          (roughly 30--50~bp from a 1~pp rise in the real long rate),
+          with a long-run capital-stock elasticity near one.
+    \item UK firm evidence in the hiking cycle: higher financing costs
+          plus weaker demand (Burr and Willems, 2024; Shah et al., 2024,
+          \emph{cited via} them). Internal cash buffers dampen the
+          response (Joseph et al., 2019, \emph{cited via} them).
+          Corporate-bond pass-through settled near $\sim 0.7$
+          (IMF UK Selected Issues, 2024).
+    \item A gilt term premium is not an excess bond premium.
+          Gilchrist and Zakraj\v{s}ek (2012) split US spreads into
+          expected default and an EBP; Gertler and Karadi (2015)
+          stress credit costs as well as the funds rate.
+  \end{itemize}
+  \vspace{0.2em}
+  {\scriptsize The review allows a thin spread block, or an explicit
+  deferral. This MVP defers IG/HY credit (and CRE). Transmission runs
+  through gilt / swap user costs.}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{The public interest bill}
+  \begin{itemize}
+    \item Higher long yields raise debt service on new and refinanced
+          gilts, and bond supply absorbed by risk-averse investors can
+          crowd out private investment
+          (Greenwood and Vayanos, 2014).
+    \item Joyce and Lengyel (SWP~\textbf{1,097}, 2024): issuance
+          surprises move the curve through duration-risk and local-supply
+          channels. A fully unexpected QT-sized programme:
+          about \textbf{20~bp} at the 10-year in low stress, nearly
+          \textbf{120~bp} in high stress. Passive runoff and active
+          sales are broadly similar, pound for pound.
+    \item IMF (2024): gilt yields were more responsive to policy-rate
+          increases than in past UK cycles, consistent with elevated
+          debt and post-mini-Budget risk perceptions.
+    \item With elevated public debt, a term-premium shock has a
+          first-order fiscal leg, and that leg can feed back into
+          confidence and gilt-market functioning.
+  \end{itemize}
+  \vspace{0.3em}
+  {\footnotesize Modelling implication from the sketch: keep an
+  index-linked share. Do not set $s^{IL}=0$.}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Sterling depends on the shock; LDI is not linear}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{FX sign (review \S2.5)}
+      \begin{itemize}
+        \item A 1~pp \textbf{Bank Rate} surprise:
+              sterling ERI about $+2\%$ to $+7\%$,
+              peaking within about a quarter
+              (Burr and Willems, 2024; Forbes et al.,
+              \emph{cited via} them).
+        \item \textbf{(a) sterilised term premium:}
+              a relative-rate reading.
+              Sterling tends to \textbf{appreciate}.
+        \item \textbf{(c) sovereign:}
+              gilt--FX risk. The same long-rate
+              rise co-moves with a
+              \textbf{depreciation}.
+      \end{itemize}
+      {\scriptsize Do not hard-wire ``higher long rates
+      $\Rightarrow$ a stronger pound''
+      (Greenwood et al., 2023;
+      Gourinchas and Rey, 2007).}
+    \end{column}
+    \begin{column}{0.50\textwidth}
+      \begin{alertblock}{LDI: non-linear stress, off in the MVP}
+        {\scriptsize
+        September 2022: leveraged LDI faced NAV and collateral
+        calls after the 23~September mini-Budget; forced gilt sales
+        amplified the sell-off
+        (BoE Financial Policy Summary, 30~Sep 2022;
+        Financial Stability Report, December 2022;
+        Pinter, SWP~\textbf{1,019}, 2023).
+        Joyce and Lengyel's $\sim 20$ versus $\sim 120$~bp gap is
+        the same stress non-linearity.
+        \textbf{Leave it off} for a sterilised, calm-market term
+        premium. Switch it on only under gilt stress, leveraged
+        non-bank duration, or a large sudden credibility shock.}
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+%======================================================================
+\section{The model}
+%----------------------------------------------------------------------
+\begin{frame}{SOE-NK with HANK-lite savers and mortgagors}
+  \begin{itemize}
+    \item Small open economy. Hybrid Phillips curve, Taylor rule,
+          $q$-theory investment, UIP.
+    \item Two households only: \textbf{savers} and \textbf{mortgagors}.
+          Not a full idiosyncratic-income distribution.
+    \item Mortgage bridge from the yield curve. One remortgage hazard
+          updates both the stock rate and the LTV debt stock.
+          No second cohort, no buy-to-let.
+    \item Sticky housing user-cost curve, so house prices are not an
+          impact jump. Fiscal interest bill with an index-linked share
+          and a duration refix. Resource constraint with net exports.
+    \item Linear system in \texttt{dynare/uk\_long\_rate.mod}:
+          19 predetermined variables, 6 forward-looking variables in
+          the declaration, 11 static definitions.
+          Blanchard--Kahn count on this calibration: 36 stable roots,
+          6 finite unstable (\texttt{output/success\_checks.txt}).
+    \item The paths in \texttt{output/} are the Python QZ twin.
+          \texttt{stoch\_simul} leaves the Taylor rule free and is
+          \textbf{not} \textbf{(a) sterilised term premium}.
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Three shocks, and how (a) is sterilised}
+  \textbf{(a) sterilised term premium.}
+  $TP_t$ is an AR(1) with $\rho_{TP}=0.90$ (illustrative, not held fixed).
+  The innovation is scaled so $R^L$ rises 100~bp on impact
+  (about $0.252$ quarterly percent;
+  \texttt{success\_checks.txt}).
+  \vspace{0.25em}
+
+  {\footnotesize
+  Anticipated Bank Rate peg. The Taylor rule stays in the model.
+  For the first $H$ quarters the monetary residual is set to
+  $\varepsilon^{\mathrm{ster}}_t=-i^{TR}_t$, and $i^{\mathrm{path}}_t=0$, so}
+  \begin{align*}
+    i_t
+      &= \rho_i i_{t-1}
+       + (1-\rho_i)\bigl(\varphi_\pi \pi_t + \tfrac14\varphi_y Y_t\bigr) \\
+      &\quad
+       + \psi_{\mathrm{nfa}} E_t nfa_{t+1}
+       + \nu_t
+       + \varepsilon^{\mathrm{ster}}_t
+       = 0.
+  \end{align*}
+  {\footnotesize
+  $\varphi_y=0.125$ is the annual convention, hence the factor $1/4$.
+  Residuals are anticipated. The rule resumes after $H$.
+  A permanent peg is not used: inflation would be undetermined.
+  \textbf{Horizon $H=12$ quarters}
+  (\texttt{H\_peg} in \texttt{src/calibration.py};
+  \texttt{p.H\_peg = 12} in \texttt{dynare/params\_calibration.m};
+  \texttt{H = 12} in \texttt{dynare/run\_uk\_long\_rate.m}).
+  The figure window is 40 quarters, so the rule is back on for the last 28.
+
+  \textbf{(b) path news} shifts $\nu_t$ inside the rule
+  ($\rho_\nu=0.75$), not sterilised, scaled to the same $+100$~bp long rate.
+  \textbf{(c) sovereign} is the UIP premium $\rho^{fx}_t$
+  (\texttt{e\_rhofx} in the \texttt{.mod}). It is not fired.}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{New-loan rate versus the mortgage stock}
+  Debt service uses the stock rate. User cost and new borrowing use
+  the new-loan rate.
+  \begin{align*}
+    R^{m}_{t}
+      &= \omega_{S}\, i_{t} + \omega_{L}\, R^{L}_{t} + \zeta_{t},
+      \qquad \omega_{S}+\omega_{L}=1, \\[0.15em]
+    R^{m,\mathrm{stock}}_{t}
+      &= (1-\lambda_{q})\, R^{m,\mathrm{stock}}_{t-1}
+       + \lambda_{q}\, R^{m}_{t}.
+  \end{align*}
+  \begin{itemize}
+    \item $\lambda_{q}=0.09$ is held fixed (sketch). Mean spell
+          $1/0.09 \approx 11.1$ quarters; annual reset probability
+          $1-0.91^{4}\approx 31\%$.
+          Provisional weights: $\omega_{S}=0.30$, $\omega_{L}=0.70$.
+    \item Borrower consumption:
+          \[
+            C^{b}_{t}
+              = \alpha_{y} Y_{t}
+              - \mu_{ds}\, R^{m,\mathrm{stock}}_{t}
+              + \mu_{\mathrm{coll}}\lambda_{q}
+                \bigl(P^{h}_{t}-B^{m}_{t-1}\bigr).
+          \]
+          $\mu_{ds}=15$, $\alpha_{y}=0.15$, $\mu_{\mathrm{coll}}=0.10$.
+          The collateral term is provisional, and it only bites on the
+          fraction $\lambda_{q}$ that remortgages.
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Interest bill: index-linked share and duration}
+  Do not double-count $s^{IL}$.
+  $B^{\mathrm{nom}}=(1-s^{IL})B^{g}$ and $B^{IL}=s^{IL}B^{g}$,
+  with $B^{g}$ equal to 4 quarters of GDP
+  (about 100\% of annual GDP).
+  In the linear units, $b^{\mathrm{nom}}=3$ and $b^{IL}=1$.
+  \begin{align*}
+    R^{\mathrm{eff}}_{t}
+      &= (1-\delta_{D})\, R^{\mathrm{eff}}_{t-1} + \delta_{D}\, R^{L}_{t},
+      \qquad \delta_{D}=\frac{1}{4D}, \\[0.2em]
+    IB_{t}
+      &= b^{\mathrm{nom}} R^{\mathrm{eff}}_{t}
+       + b^{IL}\bigl(r^{IL}_{t}+\pi_{t}\bigr)
+       + \frac{i_{ss}}{100}\widetilde{B}^{g}_{t}.
+  \end{align*}
+  \begin{itemize}
+    \item $s^{IL}=0.25$ and $D=9.1$ years are held fixed, so
+          $\delta_{D}=1/36.4\approx 0.02747$.
+          On impact, from a zero lag,
+          $R^{\mathrm{eff}}_{0}/R^{L}_{0}=1/(4D)$.
+    \item The index-linked real coupon refixes toward $R^{L}-E\pi$.
+          The inflation uplift sits \emph{inside} reported $IB$.
+          A disinflation therefore cuts the bill on impact even while
+          the conventional coupon is starting to refix.
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{UIP: a rise in $rer$ is a depreciation}
+  \begin{equation*}
+    rer_{t}
+      = E_{t} rer_{t+1}
+      - \bigl(i_{t}-E_{t}\pi_{t+1}\bigr)
+      + \chi_{\mathrm{nfa}}\, nfa_{t}
+      + \rho^{fx}_{t}.
+  \end{equation*}
+  \begin{itemize}
+    \item $\chi_{\mathrm{nfa}}=0.01$. Net exports:
+          $NX_{t}=\eta_{rer}\, rer_{t}-\eta_{y} Y_{t}+\eta_{y^{\ast}} Y^{\ast}_{t}$,
+          with $\eta_{rer}=0.06$ and $\eta_{y}=0.18$.
+    \item Under \textbf{(a) sterilised term premium}, $i_{t}=0$ on the peg
+          while inflation falls, so the real short rate rises and
+          sterling appreciates ($rer$ falls). That is the review's sign
+          for (a).
+    \item \textbf{(c) sovereign} enters as $\rho^{fx}_{t}$ and can flip
+          the sign. The shock is in the \texttt{.mod} and is not fired,
+          so there is no (c) IRF in \texttt{output/}.
+    \item A passive tax rule $\tau_{t}=\varphi_{dg}\widetilde{B}^{g}_{t-1}$
+          ($\varphi_{dg}=0.06$) closes the fiscal loop.
+          $\varphi_{\pi}=1.5$, $\beta=0.995$.
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Calibration: three cells held fixed, the rest provisional}
+  {\footnotesize
+  \setlength{\tabcolsep}{3.5pt}
+  \renewcommand{\arraystretch}{1.02}
+  \begin{tabular}{@{}lll>{\raggedright\arraybackslash}p{5.5cm}@{}}
+    \toprule
+    & Value & Status & Role \\
+    \midrule
+    $\lambda_{q}$ & 0.09 & \textbf{fixed} & quarterly remortgage hazard \\
+    $s^{IL}$ & 0.25 & \textbf{fixed} & index-linked share of the gilt stock \\
+    $D$ & 9.1y & \textbf{fixed} & modified duration \\
+    $\kappa$ & 0.004 & \textbf{provisional} & NKPC slope. Flat, so a finite peg is not a Fisher spiral \\
+    $\varphi_{h}$, $\kappa_{c}$ & 0.75, 0.055 & \textbf{provisional} & housing user cost; loading on $C^{b}$ \\
+    $\kappa_{H}$, $\kappa_{\mathrm{level}}$ & 0.03, 0.05 & \textbf{provisional} & housing stock and level anchor \\
+    $\mu_{\mathrm{coll}}$ & 0.10 & \textbf{provisional} & LTV / collateral, scaled by $\lambda_{q}$ \\
+    $\omega_{S}$, $\omega_{L}$ & 0.30, 0.70 & provisional & Bank Rate and long-rate weights in $R^{m}$ \\
+    $\beta$, $\varphi_{\pi}$, $\rho_{i}$ & 0.995, 1.5, 0.86 & provisional & discount factor and the Taylor rule \\
+    $\varphi_{y}$, $\psi_{\mathrm{nfa}}$ & 0.125, 0.08 & provisional & annual output weight; NFA term inside $i^{TR}$ \\
+    $\rho_{TP}$, $\rho_{\nu}$ & 0.90, 0.75 & provisional & persistence of (a) and of (b) \\
+    $h_{s}$, $\sigma$, $\psi^{TP}$ & 0.40, 6, 2 & provisional & saver level rule; $\mathrm{eis}=(1-h_{s})/\sigma=0.10$ \\
+    \bottomrule
+  \end{tabular}
+  }
+  \vspace{0.15em}
+  {\scriptsize
+  Full list in \texttt{src/calibration.py} and the \texttt{.mod}.
+  $\lambda_{q}$, $s^{IL}$ and $D$ are not free.
+  $\kappa$ and the housing loadings are provisional: an earlier pass
+  troughed near $-9.5\%$ per $+100$~bp. Not UK estimates.}
+\end{frame}
+
+%======================================================================
+\section{Results}
+%----------------------------------------------------------------------
+\begin{frame}{(a) sterilised term premium: activity, houses, the bill}
+  \begin{center}
+    \includegraphics[width=\textwidth,height=0.42\textheight,keepaspectratio]%
+      {irf_a_y_ph_ib.png}
+  \end{center}
+  \vspace{-0.35em}
+  {\scriptsize
+  $+100$~bp on $R^{L}$, peg $H=12$.
+  From \texttt{output/success\_checks.txt}
+  (CSV \texttt{irf\_tp\_sterilised.csv}):}
+  \begin{itemize}
+    \item Output: impact $-0.391\%$, trough $-0.545\%$ in quarter~4.
+    \item House prices: impact $-0.752\%$, trough $-2.597\%$ in quarter~8.
+    \item Interest bill: impact $-0.0340$~pp of GDP, then a peak of
+          $+0.2017$~pp in quarter~24.
+          A full immediate refix of the conventional stock would be
+          $0.75$~pp. The early dip is the index-linked uplift.
+  \end{itemize}
+  \Calibrated
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{(a) sterilised term premium: who cuts consumption}
+  \begin{center}
+    \includegraphics[width=\textwidth,height=0.44\textheight,keepaspectratio]%
+      {irf_a_consumption.png}
+  \end{center}
+  \vspace{-0.3em}
+  {\scriptsize Same path. Savers in blue, borrowers in red on the left panel.}
+  \begin{itemize}
+    \item Savers do not raise consumption:
+          $C^{s}\in[-0.768\%,-0.081\%]$ over the 40 quarters.
+    \item Borrowers fall at least as much:
+          $C^{b}\in[-1.038\%,-0.227\%]$,
+          trough $-1.038\%$ in quarter~9.
+    \item The lag is $\lambda_{q}$. New-loan $R^{m}$ jumps 70~bp on impact;
+          the stock rate only 6.3~bp, and peaks at quarter~10,
+          one quarter after the borrower trough.
+  \end{itemize}
+  \Calibrated
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{(a) sterilised term premium against (b) path news}
+  \begin{center}
+    \includegraphics[width=\textwidth,height=0.34\textheight,keepaspectratio]%
+      {irf_a_vs_b.png}
+  \end{center}
+  \vspace{-0.35em}
+  \begin{center}
+  {\scriptsize
+  \setlength{\tabcolsep}{5pt}
+  \begin{tabular}{@{}lcc@{}}
+    \toprule
+    & (a) sterilised term premium & (b) path news \\
+    \midrule
+    $R^{L}$ on impact & $+100$~bp & $+100$~bp \\
+    Bank Rate on impact & pegged at 0 ($H=12$) & $+315$~bp \\
+    Output trough & $-0.545\%$ (q4) & $-1.178\%$ (q5) \\
+    House-price trough & $-2.597\%$ (q8) & $-6.551\%$ (q7) \\
+    \bottomrule
+  \end{tabular}
+  }
+  \end{center}
+  \vspace{0.05em}
+  {\scriptsize
+  (b) from \texttt{irf\_short\_rate\_news.csv}.
+  The expectations-hypothesis weight on the current short rate is only
+  $1/(4D)$, so the same 100~bp long-rate move needs a much larger
+  Bank Rate path (peak $+560$~bp in quarter~4).
+  Under (b), $R^{L}$ later dips to $-11.8$~bp (quarter~16);
+  under (a) it stays positive (minimum $+2.35$~bp).
+  \textbf{(c) sovereign} is not on this figure.}
+  \Calibrated
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{(a) sterilised term premium: interest-bill split}
+  \begin{center}
+    \includegraphics[width=0.90\textwidth,height=0.40\textheight,keepaspectratio]%
+      {irf_a_ib_split.png}
+  \end{center}
+  \vspace{-0.35em}
+  {\scriptsize
+  Columns \texttt{ib\_nom} and \texttt{ib\_il} on
+  \texttt{irf\_tp\_sterilised.csv}.
+  $IB$ is percentage points of GDP.}
+  \begin{itemize}
+    \item Index-linked piece, including the uplift:
+          $-0.0563$~pp of GDP on impact (disinflation).
+    \item Nominal coupon: rises immediately, but only at rate
+          $1/(4D)$. Peak $+0.1585$~pp in quarter~19.
+          $R^{\mathrm{eff}}$ itself peaks in quarter~17.
+    \item Sum: impact $-0.0340$~pp, peak $+0.2017$~pp in quarter~24.
+          Coupon half-life is about 25 quarters; $\rho_{TP}=0.90$
+          pulls the peak forward of that half-life.
+  \end{itemize}
+  \Calibrated
+\end{frame}
+
+%======================================================================
+\section{Next steps}
+%----------------------------------------------------------------------
+\begin{frame}{Next: high-frequency gilt local projections}
+  \texttt{src/lp\_proxyvar.py} is a scaffold. It does not ship a surprise file.
+  With no \texttt{data/gilt\_surprises.csv} it writes
+  \texttt{output/lp\_irf\_stub\_Y\_Ph.csv} full of NaNs.
+  \begin{itemize}
+    \item \textbf{(a) sterilised term premium,} empirical analogue:
+          the high-frequency 10-year gilt change, residualised on a
+          constant, the Bank Rate surprise, and the near-term OIS path
+          (\texttt{orthogonalise\_gilt\_surprise}).
+    \item \textbf{(b) path news:} the OIS path itself.
+    \item Outcomes the stub is shaped for: ONS monthly GDP and a UK
+          house-price index. Horizons 0--12 in the stub.
+          Reference already in the code: Cesa-Bianchi, Thwaites and
+          Vicondoa (2020).
+    \item \textbf{Next estimation step:} a linear Jord\`a baseline on
+          that residualised surprise, then a state-dependent / non-linear
+          variant \`a la David, Giacomini, Jiao and Wang.
+          The non-linear variant is not in the repo yet.
+  \end{itemize}
+  {\scriptsize No UK surprise series is invented here.
+  A synthetic DGP exists only inside \texttt{src/test\_lp\_algebra.py}.}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Then: Dynare Bayesian estimation on UK data}
+  \begin{itemize}
+    \item Not run. The bottom of \texttt{uk\_long\_rate.mod} leaves
+          \texttt{estimated\_params} for later.
+          $\lambda_{q}$, $s^{IL}$ and $D$ stay fixed.
+    \item A later block may free $\kappa$, $\rho_{TP}$, $\rho_{\nu}$,
+          $\omega_{S}$, $\mu_{ds}$ and the housing loadings, and only
+          once the observables and the high-frequency instruments
+          are actually loaded.
+    \item \textbf{Prior for $\kappa$.}
+          Centre it on an import-penetration-dependent Phillips-curve
+          slope \`a la Hottman and Reyes-Heroles, converted to an
+          aggregate slope, and keep the prior \textbf{wide}.
+          The calibrated $\kappa=0.004$ is a flat slope that stops a
+          finite peg becoming a Fisher spiral. It is not that prior,
+          and it is not a UK posterior.
+    \item Sketch observable list, not yet loaded: Bank Rate / SONIA,
+          the 10-year gilt and gilt--OIS, MLAR 2-year and 5-year fixes,
+          the Bankstats stock rate, UK house prices, ONS consumption,
+          investment, GDP and CPI, the sterling ERI, and the DMO
+          interest bill.
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Takeaways}
+  \begin{itemize}
+    \item Separate \textbf{(a) sterilised term premium},
+          \textbf{(b) path news} and \textbf{(c) sovereign}.
+          UK path-shock macro peaks are not UK term-premium IRFs.
+          LDI / September 2022 stays a boxed non-linear stress effect.
+    \item In the \textbf{calibrated} twin, a $+100$~bp
+          \textbf{(a) sterilised term premium} ($H=12$) lowers output
+          and house prices and, after an index-linked dip, raises the
+          interest bill. Borrowers cut consumption by at least as much
+          as savers, with a lag of $\lambda_{q}=0.09$.
+          Savers do not raise consumption.
+    \item \textbf{(b) path news}, scaled to the same long-rate impact,
+          is a much larger short-rate path and a deeper contraction.
+          \textbf{(c) sovereign} is coded and not fired.
+    \item These are not estimates. $\kappa$ and the housing parameters
+          are provisional. Next: residualised gilt local projections,
+          including a state-dependent variant, then Bayesian estimation
+          with a wide prior on $\kappa$.
+  \end{itemize}
+\end{frame}
+
+%======================================================================
+\section{Appendix}
+%----------------------------------------------------------------------
+\begin{frame}{Appendix: yield curve, saver rule, housing curve}
+  {\footnotesize
+  \begin{align*}
+    R^{EH}_{t}
+      &= \delta_{D}\, i_{t} + (1-\delta_{D})\, E_{t} R^{EH}_{t+1},
+      \qquad
+      R^{L}_{t} = R^{EH}_{t}+TP_{t}. \\[0.35em]
+    C^{s}_{t}
+      &= h_{s} C^{s}_{t-1}
+       - \psi^{TP} TP_{t}
+       - \mathrm{eis}\,(i_{t}-E_{t}\pi_{t+1})
+       + \psi^{y} Y_{t}
+       + \psi^{IB} IB_{t}
+       - \psi^{\tau}\tau_{t}. \\[0.35em]
+    (1+\beta+\kappa_{\mathrm{level}}) P^{h}_{t}
+      &= P^{h}_{t-1}
+       + \beta E_{t} P^{h}_{t+1}
+       + \kappa_{c} C^{b}_{t} \\
+      &\quad
+       - \varphi_{h}\bigl(R^{m}_{t}-E_{t}\pi_{t+1}\bigr)
+       - \kappa_{H} H_{t}.
+  \end{align*}
+  }
+  \vspace{0.15em}
+  {\scriptsize
+  The saver equation is a level rule.
+  A forward habit Euler plus a $\Delta TP$ capital-gain term had produced
+  a positive tail in $C^{s}$ (peak about $+0.5\%$ on an earlier pass).
+  $\psi^{TP}=2>0$ books the term premium as a duration loss.
+  Housing loadings are provisional: an earlier pass troughed near
+  $-9.5\%$ per $+100$~bp, which was far too large next to UK
+  Bank Rate responses of a few percent.
+  Equations are the \texttt{.mod} / \texttt{NOTES.md} system.}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Appendix: (a) sterilised term premium, prices and sterling}
+  \begin{center}
+    \includegraphics[width=\textwidth,height=0.50\textheight,keepaspectratio]%
+      {irf_a_open.png}
+  \end{center}
+  \vspace{-0.25em}
+  {\scriptsize
+  From \texttt{irf\_tp\_sterilised.csv}.
+  Real exchange rate on impact: $-1.875\%$
+  (a fall in $rer$ is an appreciation), the sign the review assigns to
+  \textbf{(a) sterilised term premium}.
+  Inflation: $-26.4$~bp annualised on impact, trough $-34.9$~bp in
+  quarter~3. Business investment falls $0.505\%$ on impact, which is
+  also its trough on this path.
+  \textbf{(c) sovereign} is not shown.}
+  \Calibrated
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Appendix: peg length is not doing the work}
+  \begin{center}
+    \includegraphics[width=\textwidth,height=0.34\textheight,keepaspectratio]%
+      {irf_peg_robustness.png}
+  \end{center}
+  \vspace{-0.35em}
+  {\scriptsize
+  \setlength{\tabcolsep}{3.5pt}
+  \renewcommand{\arraystretch}{1.02}
+  \begin{tabular}{@{}lcccccc@{}}
+    \toprule
+    $H$ & $Y$ trough & $P^{h}$ trough & $\max C^{s}$ & $C^{b}$ trough & $IB$ peak & $\min R^{L}$ \\
+    \midrule
+    8  & $-0.540\%$ q4 & $-2.540\%$ q8 & $-0.082\%$ & $-1.024\%$ & $+0.2016$ q25 & $+2.38$~bp \\
+    12 & $-0.545\%$ q4 & $-2.597\%$ q8 & $-0.081\%$ & $-1.038\%$ & $+0.2017$ q24 & $+2.35$~bp \\
+    20 & $-0.549\%$ q4 & $-2.637\%$ q9 & $-0.080\%$ & $-1.046\%$ & $+0.2036$ q24 & $+2.25$~bp \\
+    40 & $-0.550\%$ q4 & $-2.645\%$ q9 & $-0.079\%$ & $-1.048\%$ & $+0.2046$ q24 & $+2.11$~bp \\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{0.2em}
+  Only $H=12$ is \textbf{(a) sterilised term premium}.
+  Rounded from \texttt{output/irf\_peg\_robustness.csv}.
+  $H=40$ is robustness. $\kappa=0.004$ and $\psi_{\mathrm{nfa}}$ are what
+  keep $R^{L}$ from crossing zero on a short peg; both are provisional.}
+  \Calibrated
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Appendix: the unsterilised term premium is not (a)}
+  Same $TP$ innovation as in the sterilised run, Taylor rule left on.
+  This is what \texttt{stoch\_simul(e\_tp)} does.
+  File: \texttt{output/irf\_tp\_unsterilised.csv}.
+  \textbf{Not} \textbf{(a) sterilised term premium}.
+  \vspace{0.4em}
+  {\footnotesize
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    $R^{L}$ on impact & $+94.9$~bp (not rescaled to 100) \\
+    Bank Rate & $-6.0$~bp on impact; trough $-24.2$~bp in quarter~7 \\
+    Output & impact $-0.349\%$; trough $-0.487\%$ in quarter~4 \\
+    House prices & trough $-2.212\%$ in quarter~9 \\
+    Saver consumption & stays negative (peak $-0.080\%$) \\
+    \bottomrule
+  \end{tabular}
+  }
+  \vspace{0.45em}
+  {\scriptsize
+  The endogenous easing is small next to \textbf{(b) path news},
+  and the sign pattern for output, house prices and $C^{s}$ matches
+  the sterilised path. It is still a different experiment:
+  Bank Rate is not pegged.}
+  \Calibrated
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Appendix: what the MVP leaves out}
+  \textbf{In the linear baseline}
+  \begin{itemize}
+    \item \textbf{(a) sterilised term premium} with $H=12$,
+          \textbf{(b) path news}, and the interest-bill block with
+          $s^{IL}=0.25$.
+    \item One mortgage hazard. Savers on a level rule. Flat provisional
+          Phillips curve. Housing user-cost curve with provisional loadings.
+  \end{itemize}
+  \textbf{Coded and not fired}
+  \begin{itemize}
+    \item \textbf{(c) sovereign} ($\rho^{fx}$).
+          Cost-push, government spending, foreign demand and the
+          mortgage wedge $\zeta$ are AR shocks in the \texttt{.mod},
+          unused in the (a)/(b) paths.
+  \end{itemize}
+  \textbf{Not in the MVP}
+  \begin{itemize}
+    \item LDI / gilt-stress amplification. CRE, buy-to-let, a second
+          mortgage cohort, and a corporate EBP block.
+    \item Bayesian estimation, UK surprise data, and the state-dependent
+          local projection.
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Selected references}
+  {\scriptsize
+  Albuquerque, Lazarowicz and Lenney (2025), BoE SWP~1,115.\\
+  Best et al.\ (2020), UK EIS, as cited in the review.\\
+  Burr and Willems (2024), \emph{Bank of England Quarterly Bulletin}.\\
+  Case, Quigley and Shiller (2001), NBER WP~8606.\\
+  Cesa-Bianchi, Thwaites and Vicondoa (2020), \emph{European Economic Review}.\\
+  Gertler and Karadi (2015), \emph{AEJ: Macroeconomics}.\\
+  Gilchrist and Zakraj\v{s}ek (2007), NBER WP~13174;
+  (2012), \emph{American Economic Review}.\\
+  Gourinchas and Rey (2007), \emph{Journal of Political Economy}.\\
+  Greenwood and Vayanos (2014), \emph{Review of Financial Studies}.\\
+  Greenwood, Hanson, Stein and Sunderam (2023), \emph{Quarterly Journal of Economics}.\\
+  Hall and Jorgenson (1967), \emph{American Economic Review}.\\
+  Havranek et al.\ (2015), as cited in the review.\\
+  IMF (2024), UK Selected Issues; IMF WEO April 2024, Ch.~2.\\
+  Joyce and Lengyel (2024), BoE SWP~1,097.
+  Kaminska, Mumtaz and \v{S}ustek (2021), BoE SWP~914.\\
+  Mishkin (2007), Jackson Hole.
+  Pinter (2023), BoE SWP~1,019.
+  Rajan, Rodriguez-Tous and Salgado-Moreno (2025), BoE SWP~1,158.\\
+  Anjum and Herler (2023), Joseph et al.\ (2019), McKay and Wieland,
+  Shah et al.\ (2024), Slacalek (2009), Forbes et al.:
+  \emph{cited via} Burr and Willems (2024).\\
+  BoE Financial Policy Summary, 30~September 2022;
+  Financial Stability Report, December 2022.\\
+  Compile: \texttt{pdflatex uk\_long\_rate\_seminar.tex}
+  from \texttt{uk-long-rate/beamer/}.
+  }
+\end{frame}
+
+\end{document}
