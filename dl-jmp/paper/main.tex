@@ -1,0 +1,127 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=1in]{geometry}
+\usepackage{natbib}
+\usepackage{url}
+\usepackage{hyperref}
+
+\newcommand{\provisional}{\textit{[Provisional: notation and functional forms subject to change.]}}
+
+\title{Rates, Runoff and Sales: Optimal Monetary and Balance-Sheet Policy\\ in a Nonlinear HANK Model with a Preferred-Habitat Gilt Market\thanks{Working outline. All content is preliminary.}}
+\author{Cyrille Lenoel}
+\date{Draft outline, \today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent [To be written.] This paper studies the joint conduct of interest-rate and balance-sheet policy in a nonlinear New Keynesian model with heterogeneous households and a preferred-habitat gilt market, calibrated to the United Kingdom. Gilt purchases, passive run-off and active sales are modelled as distinct instruments. The model is solved globally with deep neural networks, verified against the linearised solution, and disciplined by high-frequency evidence from UK gilt markets.
+\end{abstract}
+
+\section{Introduction}
+\begin{itemize}
+  \item \textbf{Motivation.} Since 2009 the Bank of England has used both Bank Rate and the Asset Purchase Facility (APF). Since 2022 it has reduced the APF through passive run-off \emph{and} outright gilt sales, which sets it apart from the Federal Reserve. The September--November 2022 LDI episode showed that the gilt market can be fragile when pension and LDI demand for long-dated gilts is concentrated.
+  \item \textbf{Question.} How should the short rate and the three balance-sheet instruments (QE, passive QT and active QT) be combined when term premia respond nonlinearly to the size and composition of central-bank holdings? Does the policy split in \citet{KamdarRay2026} still hold in this setting? In that split, the short rate stabilises output and inflation and the balance sheet stabilises term premia.
+  \item \textbf{Approach.} We build a HANK model with preferred-habitat arbitrageurs à la \citet{VayanosVila2021}. Habitat demand is calibrated to UK pension and LDI holdings, separately for conventional and index-linked gilts \citep{ChenBeetsmaVanWijnbergen}. The model is solved globally with deep equilibrium nets \citep{AzinovicGaegaufScheidegger2022, MaliarMaliarWinant2021}.
+  \item \textbf{Contributions.} (i) A model in which QE, passive QT and active QT are separate instruments with potentially asymmetric effects. (ii) A global deep-learning solution that is verified systematically against the linearised solution wherever both apply. (iii) Empirical discipline from UK high-frequency gilt local projections, including a post-2022 regime interaction and the LDI episode.
+\end{itemize}
+
+\section{Related Literature}
+\noindent\textit{Note: this section will be filled from EconResearcher's literature review in \texttt{dl-jmp/literature/}.}
+\begin{itemize}
+  \item \textbf{Preferred habitat and QE/QT.} Term-structure models with segmented demand \citep{VayanosVila2021}; optimal monetary and balance-sheet policy with preferred habitat \citep{KamdarRay2026}; UK pension and LDI demand across conventional and index-linked gilts \citep{ChenBeetsmaVanWijnbergen}; fiscal backing and central-bank net worth \citep{GrodeckaMessiKliemMuller}.
+  \item \textbf{Deep-learning solution methods.} \citet{MaliarMaliarWinant2021}; \citet{AzinovicGaegaufScheidegger2022}; \citet{FernandezVillaverdeHurtadoNuno2023}; \citet{EbrahimiKahou2021, EbrahimiKahou2024}; \citet{Kase2024}; \citet{Nuno2024}; \citet{Duarte2024}. See the overview in \citet{FVDeckHarvard}.
+  \item \textbf{High-frequency identification of monetary policy.} Separating policy from information shocks with sign restrictions \citep{JarocinskiKaradi2020}; UK intraday surprise databases \citep{BraunMirandaAgrippinoSaha}.
+\end{itemize}
+
+\section{Model}
+\provisional
+
+\subsection{Households}
+A continuum of households faces idiosyncratic income risk $z_{it}$ and a borrowing limit, and saves in a liquid short asset:
+\begin{align}
+  V(a,z;\mathbf{S}) &= \max_{c,a'}\; u(c) + \beta\,\mathbb{E}\left[V(a',z';\mathbf{S}')\right] \\
+  \text{s.t.}\quad c + a' &= (1+r)\,a + (1-\tau)\,w\,z\,n + T, \qquad a' \ge \underline{a}.
+\end{align}
+The aggregate state $\mathbf{S}$ includes the wealth distribution $\mu$, which is approximated by a finite set of moments or by a permutation-invariant representation \citep{EbrahimiKahou2021}.
+
+\subsection{Preferred-Habitat Arbitrageurs}
+Risk-averse arbitrageurs with risk aversion $a$ trade gilts of maturity $\tau$ against habitat investors, whose demand is
+\begin{equation}
+  Z_t(\tau) = -\alpha(\tau)\left[\log P_t(\tau) - \beta(\tau)\right] + \theta_t(\tau),
+\end{equation}
+where $\theta_t(\tau)$ captures pension and LDI demand shocks. Market clearing requires
+\begin{equation}
+  X_t(\tau) + Z_t(\tau) + B^{CB}_t(\tau) = B^{G}_t(\tau),
+\end{equation}
+where $B^{CB}_t(\tau)$ is the stock of central-bank holdings. Term premia therefore depend on the size and maturity composition of $B^{CB}_t$ and on how much risk-bearing capacity arbitrageurs have.
+
+\subsection{Firms}
+Monopolistically competitive firms face Rotemberg price-adjustment costs, which give a nonlinear Phillips curve:
+\begin{equation}
+  \left(\pi_t - \bar\pi\right)\pi_t = \frac{\epsilon}{\psi}\left(mc_t - \frac{\epsilon-1}{\epsilon}\right) + \mathbb{E}_t\left[\Lambda_{t,t+1}\frac{Y_{t+1}}{Y_t}\left(\pi_{t+1}-\bar\pi\right)\pi_{t+1}\right].
+\end{equation}
+
+\subsection{Policy Block: Three Balance-Sheet Instruments}
+The short rate follows a rule subject to an effective lower bound:
+\begin{equation}
+  i_t = \max\left\{\underline{i},\; \bar{i} + \phi_\pi(\pi_t-\bar\pi) + \phi_y \hat{y}_t + \varepsilon^i_t\right\}.
+\end{equation}
+Central-bank holdings evolve as
+\begin{equation}
+  B^{CB}_{t+1}(\tau) = \underbrace{(1-\delta(\tau))\,B^{CB}_t(\tau)}_{\text{passive run-off}} + \underbrace{Q^{+}_t(\tau)}_{\text{QE}} - \underbrace{Q^{-}_t(\tau)}_{\text{active sales}}, \qquad Q^{\pm}_t(\tau)\ge 0.
+\end{equation}
+Active sales may carry a market-impact cost $\kappa\,(Q^{-}_t)^2$, which creates an asymmetry with QE. A consolidated budget links the APF to the Treasury through an indemnity regime (Section~\ref{sec:ext}).
+
+\section{Solution Method}
+\begin{itemize}
+  \item \textbf{Network.} A feed-forward network $\mathcal{N}_\rho(\mathbf{S})$ maps the aggregate state, including the distribution summary and the policy state $B^{CB}$, to policy functions and prices. Kinks such as the lower bound and $Q^{\pm}\ge0$ are handled with Fischer--Burmeister complementarity terms \citep{MaliarMaliarWinant2021, AzinovicGaegaufScheidegger2022}.
+  \item \textbf{Loss.} The loss is built from equilibrium residuals (Euler equations, the Phillips curve and gilt market clearing). Conditional expectations are formed from \emph{two independent shock draws}, so that the product of the residuals is an unbiased estimate of the squared expected residual (the all-in-one approach of \citealp{MaliarMaliarWinant2021}).
+  \item \textbf{Training.} States are drawn from the model's ergodic set by simulation. The network is first trained with Adam and then refined with L-BFGS to reach a low residual floor.
+  \item \textbf{Diagnostics.} We report residual distributions on held-out ergodic draws, check robustness to architecture and seeds, and track the accuracy of aggregation.
+\end{itemize}
+
+\section{Verification against the Linear Solution}
+\begin{itemize}
+  \item \textbf{Rationale.} A deep-learning solution comes with no general guarantee of correctness. We therefore compare it with the linearised solution wherever both apply.
+  \item \textbf{Nested cases.} Small shocks around the steady state, the representative-agent limit and a parameterisation without a lower bound should all reproduce the first-order impulse responses and the linear policy rules.
+  \item \textbf{Metrics.} The maximum and mean deviations of impulse responses and policy functions, reported over a grid of shock sizes, show where nonlinearity starts to matter.
+  \item \textbf{Divergence analysis.} Gaps between the global and linear solutions away from the steady state are attributed to specific nonlinearities: the lower bound, arbitrageur risk-bearing capacity and the asymmetry between sales and purchases.
+\end{itemize}
+
+\section{Empirical Targets}
+\begin{itemize}
+  \item \textbf{Sample.} 175 MPC announcement days from 2009 to September 2026, using the team's UK high-frequency gilt local projections.
+  \item \textbf{Shock purification.} A Jaroci\'nski--Karadi rate--equity sign filter \citep{JarocinskiKaradi2020} keeps 91 policy days on the FTSE 100, and 71 days are robust under both the FTSE 100 and FTSE 250.
+  \item \textbf{Specification.} Local projections of gilt yields across maturities include a post-2022 interaction and a dummy for the September--November 2022 LDI episode. Surprises are benchmarked against the Braun--Miranda-Agrippino--Saha intraday surprises \citep{BraunMirandaAgrippinoSaha}.
+  \item \textbf{Use in the model.} The model is calibrated or estimated by matching its impulse responses to these, with neural-network estimation \citep{Kase2024} as one option.
+\end{itemize}
+
+\section{Planned Results}
+\begin{itemize}
+  \item Whether the split in \citet{KamdarRay2026} (the short rate for output and inflation, the balance sheet for term premia) survives household heterogeneity and global nonlinearity.
+  \item How the effects of QE, passive QT and active QT on term premia and on activity differ, and in particular whether these effects depend on the state.
+  \item How fragile the market is when LDI demand is concentrated, and what that implies for the pace and maturity of active sales.
+  \item The distributional incidence of balance-sheet policy across the wealth distribution.
+\end{itemize}
+
+\section{Extensions}\label{sec:ext}
+\begin{itemize}
+  \item \textbf{Fiscal backing and central-bank net worth.} APF losses are modelled under full, delayed or no Treasury indemnity \citep{GrodeckaMessiKliemMuller}.
+  \item \textbf{Yield curve control.} We compare quantity-based QT with price-based targets and ask whether the long rate is left free to move \citep{FukuiYagasaki}.
+  \item \textbf{Fiscal delay.} Delays in the fiscal response, following \citet{BayerGongKuester}, interact with balance-sheet policy.
+  \item \textbf{Fallbacks.} (a) A global solution of a sectoral input--output NK model with a binding lower bound. (b) Neural-network estimation of a nonlinear UK model following \citet{Kase2024}.
+\end{itemize}
+
+\section{Conclusion}
+\begin{itemize}
+  \item This section will summarise the answer to the policy-assignment question for the UK.
+  \item It will draw out the lessons for the design of QT, in particular the choice between run-off and sales.
+  \item It will set out the methodological lesson: global deep-learning solutions are credible when they are verified against tractable benchmarks.
+\end{itemize}
+
+\bibliographystyle{plainnat}
+\bibliography{refs}
+\end{document}
