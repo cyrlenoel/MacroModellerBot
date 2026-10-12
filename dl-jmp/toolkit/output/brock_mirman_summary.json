@@ -1,0 +1,110 @@
+{
+  "model": "brock_mirman",
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Linux-6.12.94+-x86_64-with-glibc2.39",
+    "jax": "0.11.2",
+    "jaxlib": "0.11.2",
+    "optax": "0.2.8",
+    "numpy": "2.2.6",
+    "backend": "cpu",
+    "x64": true
+  },
+  "parameters": {
+    "alpha": 0.36,
+    "beta": 0.96,
+    "delta": 1.0,
+    "sigma": 1.0,
+    "rho": 0.95,
+    "sigma_z": 0.02,
+    "k_steady": 0.1901172217073285,
+    "c_steady": 0.35999047999211753,
+    "true_savings_rate": 0.34559999999999996,
+    "true_consumption_share": 0.6544000000000001,
+    "initial_consumption_share": 0.5
+  },
+  "training": {
+    "n_steps": 500,
+    "batch_size": 2048,
+    "width": 32,
+    "depth": 2,
+    "lr": 0.001,
+    "n_pairs": 4,
+    "lbfgs_steps": 100,
+    "lbfgs_pairs": 24,
+    "lbfgs_accepted": true,
+    "lbfgs_message": "started from loss 3.828586e-03; best loss 2.374186e-07; score 2.187109e-07",
+    "seed": 0,
+    "best_step": 500,
+    "best_score": 2.1871092495693555e-07,
+    "nan_resets": 0,
+    "adam_sec": 5.1056811939997715,
+    "lbfgs_sec": 6.869820385999901,
+    "train_sec": 12.179949402000148
+  },
+  "evaluation": {
+    "distribution": "cross-section of a closed-form simulation after burn-in",
+    "n": 8192,
+    "burn_in": 500,
+    "n_hermite": 11,
+    "initial_policy": {
+      "max_abs": 0.11946006872429116,
+      "mean_abs": 0.08523498816667392,
+      "max_rel": 0.4483451367825554,
+      "mean_rel": 0.44675437870414225
+    },
+    "policy": {
+      "max_abs": 9.685242516649373e-05,
+      "mean_abs": 5.9841884975931755e-05,
+      "max_rel": 0.000702806366208203,
+      "mean_rel": 0.0003111198305525598
+    },
+    "euler": {
+      "mean_abs": 0.0003134040302314085,
+      "max_abs": 0.0007336085988857006,
+      "median_abs": 0.0003557825653330952,
+      "mean_log10_abs": -3.598228603563463,
+      "max_log10_abs": -3.1345355867890663,
+      "median_log10_abs": -3.4488153378226234
+    },
+    "closed_form_euler": {
+      "mean_abs": 1.0375814790686277e-16,
+      "max_abs": 6.661338147750939e-16,
+      "median_abs": 0.0,
+      "mean_log10_abs": -182.31624951262677,
+      "max_log10_abs": -15.176438519807359,
+      "median_log10_abs": -300.0
+    }
+  },
+  "runtime_sec": 14.475987908999741,
+  "success_max_rel_below_1e-3": true,
+  "history": {
+    "step": [
+      0,
+      250,
+      500
+    ],
+    "loss": [
+      null,
+      0.0012934708046953725,
+      0.0004831889476292628
+    ],
+    "lr": [
+      0.00010000000000000005,
+      0.0005601946070970881,
+      0.0003
+    ],
+    "score": [
+      0.09456729894558077,
+      0.010131052298497282,
+      0.0038285864266095187
+    ],
+    "elapsed_sec": [
+      0.0,
+      3.476520982999773,
+      5.1003479989999505
+    ],
+    "lbfgs_loss": 2.3741857276832357e-07,
+    "lbfgs_sec": 6.869820385999901
+  }
+}

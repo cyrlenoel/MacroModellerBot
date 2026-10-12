@@ -1,0 +1,10 @@
+# CPU-only stack. Install this file as-is; do not install jax[cuda].
+# JAX's default wheel is the CPU build. A CUDA plugin is a separate package
+# and is intentionally not listed here.
+jax==0.11.2
+jaxlib==0.11.2
+optax==0.2.8
+numpy==2.2.6
+scipy==1.18.1
+matplotlib==3.10.6
+pytest==8.4.2
